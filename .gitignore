@@ -5,5 +5,3 @@ out
 next-env.d.ts
 .env*.local
 .env
-# runtime data written by the admin panel
-data/db.json

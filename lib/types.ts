@@ -104,7 +104,7 @@ export type AttendanceBook = Record<string, Record<string, AttendanceMark>>;
 export type CertificateStatus = "valid" | "revoked";
 
 export type Certificate = {
-  /** Public unique code printed on the certificate, e.g. GWA-2026-K7P4QX */
+  /** Public unique code printed on the certificate, e.g. GSA-2026-K7P4QX */
   id: string;
   studentId?: string;
   studentName: string;
@@ -122,12 +122,15 @@ export type Certificate = {
   createdAt: string;
 };
 
-export type Database = {
-  settings: Settings;
-  categories: Category[];
-  courses: Course[];
-  enquiries: Enquiry[];
-  students: Student[];
-  attendance: AttendanceBook;
-  certificates: Certificate[];
+export type Teacher = {
+  id: string;
+  name: string;
+  username: string;
+  phone: string;
+  /** Courses this teacher can see and mark. Empty = all courses. */
+  courseIds: string[];
+  active: boolean;
+  createdAt: string;
+  /** ms timestamp — sessions issued before this are rejected */
+  passwordChangedAt: number;
 };

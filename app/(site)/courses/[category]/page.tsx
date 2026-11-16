@@ -10,7 +10,12 @@ import { SITE_URL, jsonLd, pageMetadata } from "@/lib/seo";
 type Props = { params: Promise<{ category: string }> };
 
 export async function generateStaticParams() {
-  return (await getCategories()).map((c) => ({ category: c.slug }));
+  // If the database isn't reachable during the build, pages are rendered on first visit instead.
+  try {
+    return (await getCategories()).map((c) => ({ category: c.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -18,7 +23,7 @@ export async function generateMetadata({ params }: Props) {
   const cat = await getCategory(category);
   if (!cat) return {};
   return pageMetadata({
-    title: `${cat.name} in Chandigarh – Certified ${cat.shortName} Training`,
+    title: `${cat.name} in Tarn Taran – Certified ${cat.shortName} Training`,
     description: cat.description.slice(0, 158),
     path: `/courses/${cat.slug}`,
     keywords: cat.keywords,
@@ -33,16 +38,16 @@ export default async function CategoryPage({ params }: Props) {
 
   const faqs = [
     {
-      q: `Which is the best institute for ${cat.shortName.toLowerCase()} courses in Chandigarh?`,
-      a: `Goodwill Academy is among the best institutes for ${cat.shortName.toLowerCase()} courses in Chandigarh, with practical training, experienced trainers and an International Certificate${cat.slug === "beauty-makeup-courses" ? " plus Salon Certificate" : ""}.`,
+      q: `Which is the best institute for ${cat.shortName.toLowerCase()} courses in Tarn Taran?`,
+      a: `Goodwill Skills Academy is among the best institutes for ${cat.shortName.toLowerCase()} courses in Tarn Taran, with practical training, experienced trainers and an International Certificate${cat.slug === "beauty-makeup-courses" ? " plus Salon Certificate" : ""}.`,
     },
     {
-      q: `How many ${cat.shortName.toLowerCase()} courses does Goodwill Academy offer?`,
+      q: `How many ${cat.shortName.toLowerCase()} courses does Goodwill Skills Academy offer?`,
       a: `We currently offer ${courses.length} ${cat.shortName.toLowerCase()} course${courses.length === 1 ? "" : "s"}: ${courses.map((c) => c.title).join(", ")}.`,
     },
     {
-      q: "Are students from Mohali, Panchkula and Zirakpur welcome?",
-      a: "Yes, students from Chandigarh, Mohali, Panchkula, Zirakpur, Kharar and nearby areas join our courses. Flexible batch timings make it easy to attend.",
+      q: "Are students from Amritsar, Patti and Goindwal Sahib welcome?",
+      a: "Yes, students from Tarn Taran, Amritsar, Patti, Goindwal Sahib, Bhikhiwind and nearby areas join our courses. Flexible batch timings make it easy to attend.",
     },
   ];
 
@@ -73,7 +78,7 @@ export default async function CategoryPage({ params }: Props) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(schema)} />
       <PageHero
-        title={`${cat.name} in Chandigarh`}
+        title={`${cat.name} in Tarn Taran`}
         subtitle={cat.tagline}
         gradient={cat.gradient}
         crumbs={[
@@ -101,7 +106,7 @@ export default async function CategoryPage({ params }: Props) {
           <div>
             <Reveal>
               <h2 className="mb-6 font-display text-3xl font-bold text-brand-950">
-                Why join our {cat.shortName} course in Chandigarh?
+                Why join our {cat.shortName} course in Tarn Taran?
               </h2>
               <ul className="mb-10 space-y-3">
                 {[

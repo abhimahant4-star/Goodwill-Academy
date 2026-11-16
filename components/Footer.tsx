@@ -18,7 +18,7 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
             <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-brand-500 to-gold-500 text-white">
               <GraduationCap className="h-6 w-6" />
             </span>
-            <span className="font-display text-2xl font-bold text-white">Goodwill Academy</span>
+            <span className="font-display text-2xl font-bold text-white">Goodwill Skills Academy</span>
           </Link>
           <p className="text-sm leading-relaxed">
             Best academy in {settings.city} for makeup, beauty, fashion designing, sewing and computer courses with
@@ -83,7 +83,7 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
         </div>
       </div>
       <div className="relative border-t border-white/10 py-5 text-center text-xs text-white/50">
-        © {new Date().getFullYear()} Goodwill Academy, {settings.city}. All rights reserved.
+        © {new Date().getFullYear()} Goodwill Skills Academy, {settings.city}. All rights reserved.
       </div>
     </footer>
   );

@@ -3,16 +3,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { SESSION_COOKIE, SESSION_TTL_SECONDS, checkPassword, createSessionToken, verifySessionToken } from "@/lib/auth";
+import { SESSION_COOKIES, SESSION_TTL_SECONDS, checkAdminPassword, createSessionToken } from "@/lib/auth";
+import { requireAdmin } from "@/lib/session";
+import { hashPassword } from "@/lib/password";
 import * as db from "@/lib/db";
 import { dedupe } from "@/lib/seo";
-import { isValidDate, todayIST } from "@/lib/attendance";
-import type { AttendanceMark, Course, EnquiryStatus, IconName, StudentStatus } from "@/lib/types";
-
-async function requireAdmin() {
-  const token = (await cookies()).get(SESSION_COOKIE)?.value;
-  if (!(await verifySessionToken(token))) redirect("/admin/login");
-}
+import { isValidDate } from "@/lib/attendance";
+import type { Course, EnquiryStatus, IconName, StudentStatus } from "@/lib/types";
 
 function refreshSite() {
   revalidatePath("/", "layout");
@@ -21,11 +18,11 @@ function refreshSite() {
 // ---------- Auth ----------
 export async function login(_prev: string | null, form: FormData): Promise<string | null> {
   const password = String(form.get("password") ?? "");
-  if (!(await checkPassword(password))) {
+  if (!(await checkAdminPassword(password))) {
     await new Promise((r) => setTimeout(r, 800)); // slow down guessing
     return "Incorrect password.";
   }
-  (await cookies()).set(SESSION_COOKIE, await createSessionToken(), {
+  (await cookies()).set(SESSION_COOKIES.admin, await createSessionToken("admin", "admin"), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -36,7 +33,7 @@ export async function login(_prev: string | null, form: FormData): Promise<strin
 }
 
 export async function logout() {
-  (await cookies()).delete(SESSION_COOKIE);
+  (await cookies()).delete(SESSION_COOKIES.admin);
   redirect("/admin/login");
 }
 
@@ -174,19 +171,6 @@ export async function removeStudent(id: string) {
   revalidatePath("/admin", "layout");
 }
 
-// ---------- Attendance ----------
-export async function saveAttendanceAction(date: string, marks: Record<string, AttendanceMark | null>) {
-  await requireAdmin();
-  if (!isValidDate(date)) throw new Error("Invalid date.");
-  if (date > todayIST()) throw new Error("Attendance cannot be marked for a future date.");
-  const clean: Record<string, AttendanceMark | null> = {};
-  for (const [id, mark] of Object.entries(marks)) {
-    if (mark === null || mark === "P" || mark === "A" || mark === "L") clean[id] = mark;
-  }
-  await db.saveAttendance(date, clean);
-  revalidatePath("/admin", "layout");
-}
-
 // ---------- Certificates ----------
 export async function createCertificateAction(_prev: string | null, form: FormData): Promise<string | null> {
   await requireAdmin();
@@ -232,4 +216,52 @@ export async function removeCertificate(id: string) {
   await db.deleteCertificate(id);
   revalidatePath("/admin", "layout");
   redirect("/admin/certificates");
+}
+
+// ---------- Teachers ----------
+export async function saveTeacherAction(_prev: string | null, form: FormData): Promise<string | null> {
+  await requireAdmin();
+  const id = str(form, "id") || db.newId();
+  const name = str(form, "name", 100);
+  const username = str(form, "username", 40).toLowerCase();
+  const password = String(form.get("password") ?? "");
+  const isNew = !str(form, "id");
+
+  if (name.length < 2) return "Teacher name is required.";
+  if (!/^[a-z0-9._-]{3,40}$/.test(username)) return "Username must be 3–40 characters: letters, numbers, dot, dash or underscore.";
+  if ((isNew || password) && password.length < 8) return "Password must be at least 8 characters.";
+
+  const validCourses = new Set((await db.getCourses({ includeDrafts: true })).map((c) => c.id));
+  try {
+    await db.saveTeacher(
+      {
+        id,
+        name,
+        username,
+        phone: str(form, "phone", 20),
+        courseIds: form.getAll("courseIds").map(String).filter((c) => validCourses.has(c)),
+        active: form.get("active") === "on",
+      },
+      password ? await hashPassword(password) : undefined,
+    );
+  } catch (e) {
+    return (e as Error).message;
+  }
+  revalidatePath("/admin", "layout");
+  redirect("/admin/teachers?saved=1");
+}
+
+export async function toggleTeacherActive(id: string) {
+  await requireAdmin();
+  const teacher = await db.getTeacher(id);
+  if (!teacher) return;
+  const { createdAt: _c, passwordChangedAt: _p, ...rest } = teacher;
+  await db.saveTeacher({ ...rest, active: !teacher.active });
+  revalidatePath("/admin", "layout");
+}
+
+export async function removeTeacher(id: string) {
+  await requireAdmin();
+  await db.deleteTeacher(id);
+  revalidatePath("/admin", "layout");
 }

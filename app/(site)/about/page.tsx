@@ -7,24 +7,26 @@ import { getCategories } from "@/lib/db";
 import { pageMetadata } from "@/lib/seo";
 
 const KEYWORDS = [
-  "about Goodwill Academy Chandigarh",
-  "best skill academy in Chandigarh",
-  "best makeup academy in Chandigarh",
-  "best fashion designing institute in Chandigarh",
-  "best computer institute in Chandigarh",
-  "sewing institute in Chandigarh",
-  "international certificate courses in Chandigarh",
-  "salon certificate course in Chandigarh",
-  "vocational training institute in Chandigarh",
-  "skill courses for women in Chandigarh",
-  "beauty academy in Mohali",
-  "training institute in Panchkula",
+  "about Goodwill Skills Academy Tarn Taran",
+  "best skill academy in Tarn Taran",
+  "best makeup academy in Tarn Taran",
+  "best fashion designing institute in Tarn Taran",
+  "best computer institute in Tarn Taran",
+  "sewing institute in Tarn Taran",
+  "international certificate courses in Tarn Taran",
+  "salon certificate course in Tarn Taran",
+  "vocational training institute in Tarn Taran",
+  "skill courses for women in Tarn Taran",
+  "beauty academy in Amritsar",
+  "training institute in Patti",
+  "Goodwill Skills Academy Taran Taran",
+  "best skill academy in Taran Taran",
 ];
 
 export const metadata = pageMetadata({
-  title: "About Us – Best Skill Academy in Chandigarh",
+  title: "About Us – Best Skill Academy in Tarn Taran",
   description:
-    "Goodwill Academy is a Chandigarh skill academy offering certified beauty, makeup, fashion designing, sewing and computer courses with International & Salon Certificates and 100% practical training.",
+    "Goodwill Skills Academy is a Tarn Taran skill academy offering certified beauty, makeup, fashion designing, sewing and computer courses with International & Salon Certificates and 100% practical training.",
   path: "/about",
   keywords: KEYWORDS,
 });
@@ -34,8 +36,8 @@ export default async function AboutPage() {
   return (
     <>
       <PageHero
-        title="About Goodwill Academy"
-        subtitle="Empowering students in Chandigarh with practical, certified skills that turn passion into a profession."
+        title="About Goodwill Skills Academy"
+        subtitle="Empowering students in Tarn Taran with practical, certified skills that turn passion into a profession."
         crumbs={[
           { name: "Home", href: "/" },
           { name: "About", href: "/about" },
@@ -45,15 +47,15 @@ export default async function AboutPage() {
       <section className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-24 sm:px-6 lg:grid-cols-2">
         <Reveal>
           <h2 className="font-display text-4xl font-bold text-brand-950">
-            A Trusted Skill Academy in <span className="text-gradient">Chandigarh</span>
+            A Trusted Skill Academy in <span className="text-gradient">Tarn Taran</span>
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-ink/70">
-            Goodwill Academy is a career-focused training institute in Chandigarh offering professional courses in
+            Goodwill Skills Academy is a career-focused training institute in Tarn Taran offering professional courses in
             beauty &amp; makeup, fashion designing, sewing &amp; tailoring and computers. Our mission is simple: give every
             student practical, job-ready skills and a certificate they can be proud of.
           </p>
           <p className="mt-4 leading-relaxed text-ink/70">
-            Students from Chandigarh, Mohali, Panchkula and Zirakpur learn with us through small batches, hands-on
+            Students from Tarn Taran, Amritsar, Patti and Goindwal Sahib learn with us through small batches, hands-on
             practice and supportive trainers. Every course is backed by an International Certificate, and our beauty
             students also earn a Salon Certificate.
           </p>

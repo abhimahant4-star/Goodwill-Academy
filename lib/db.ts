@@ -1,278 +1,326 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { randomUUID } from "crypto";
+import type { Collection, Document } from "mongodb";
+import { getDb } from "./mongo";
+import { seedCategories, seedCourses, seedSettings } from "./seed";
 import type {
+  AttendanceBook,
   AttendanceMark,
   Category,
   Certificate,
   Course,
-  Database,
   Enquiry,
   Settings,
   Student,
+  Teacher,
 } from "./types";
-import { seedDatabase } from "./seed";
 
 /**
- * Tiny JSON-file data store. Works on any Node host (VPS, cPanel Node, Render, Railway).
- * For serverless hosts with a read-only filesystem (e.g. Vercel), swap these
- * functions for a real database — the rest of the app only uses this module.
+ * MongoDB data layer. Every page, action and API in the app goes through these functions.
+ * Each document keeps its public id both as `_id` and as a normal field, and `_id` is
+ * stripped before data leaves this module.
  */
-const DATA_DIR = path.join(process.cwd(), "data");
-const DB_FILE = path.join(DATA_DIR, "db.json");
 
-let writeQueue: Promise<unknown> = Promise.resolve();
-let seeding: Promise<void> | null = null;
+type WithId<T> = T & { _id: string };
 
-/** Writes via a temp file + rename so readers never see a half-written file. */
-async function writeAtomic(data: unknown) {
-  const tmp = `${DB_FILE}.${process.pid}.${randomUUID()}.tmp`;
-  await fs.writeFile(tmp, JSON.stringify(data, null, 2));
-  for (let attempt = 0; ; attempt++) {
-    try {
-      return await fs.rename(tmp, DB_FILE);
-    } catch (err) {
-      // Windows can briefly lock the target while another request is reading it.
-      const code = (err as NodeJS.ErrnoException).code;
-      if (attempt >= 5 || (code !== "EPERM" && code !== "EBUSY" && code !== "EACCES")) throw err;
-      await new Promise((r) => setTimeout(r, 25 * (attempt + 1)));
-    }
+type AttendanceDoc = {
+  _id: string; // `${date}:${studentId}`
+  date: string;
+  studentId: string;
+  mark: AttendanceMark;
+  markedBy: string;
+  updatedAt: Date;
+};
+
+const NO_ID = { projection: { _id: 0 } } as const;
+
+let ready: Promise<void> | null = null;
+
+async function col<T extends Document>(name: string): Promise<Collection<T>> {
+  ready ??= init().catch((err) => {
+    ready = null;
+    throw err;
+  });
+  await ready;
+  return (await getDb()).collection<T>(name);
+}
+
+/** Creates indexes and seeds the default content the first time the app talks to a new database. */
+async function init() {
+  const db = await getDb();
+  await Promise.all([
+    db.collection("courses").createIndex({ categorySlug: 1, slug: 1 }, { unique: true }),
+    db.collection("enquiries").createIndex({ createdAt: -1 }),
+    db.collection("students").createIndex({ createdAt: -1 }),
+    db.collection("students").createIndex({ rollNo: 1 }, { unique: true }),
+    db.collection("attendance").createIndex({ date: 1 }),
+    db.collection("attendance").createIndex({ studentId: 1 }),
+    db.collection("certificates").createIndex({ createdAt: -1 }),
+    db.collection("teachers").createIndex({ username: 1 }, { unique: true }),
+  ]);
+
+  const settings = db.collection<WithId<Settings>>("settings");
+  await settings.updateOne({ _id: "site" }, { $setOnInsert: seedSettings }, { upsert: true });
+
+  const categories = db.collection<WithId<Category>>("categories");
+  if ((await categories.estimatedDocumentCount()) === 0) {
+    await categories.insertMany(seedCategories.map((c) => ({ ...c, _id: c.slug })));
   }
-}
-
-/** Some filesystems (notably Windows) can expose an empty file for an instant during a replace — retry briefly. */
-async function readJsonWithRetry(): Promise<Partial<Database>> {
-  for (let attempt = 0; ; attempt++) {
-    const raw = await fs.readFile(DB_FILE, "utf8");
-    try {
-      return JSON.parse(raw);
-    } catch (err) {
-      if (attempt >= 4) throw err;
-      await new Promise((r) => setTimeout(r, 20 * (attempt + 1)));
-    }
+  const courses = db.collection<WithId<Course>>("courses");
+  if ((await courses.estimatedDocumentCount()) === 0) {
+    await courses.insertMany(seedCourses.map((c) => ({ ...c, _id: c.id })));
   }
-}
-
-async function readDb(): Promise<Database> {
-  try {
-    const db = await readJsonWithRetry();
-    // Fill in collections/fields added in later versions so older db.json files keep working.
-    return {
-      ...structuredClone(seedDatabase),
-      ...db,
-      settings: { ...seedDatabase.settings, ...db.settings },
-    } as Database;
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
-    seeding ??= (async () => {
-      await fs.mkdir(DATA_DIR, { recursive: true });
-      await writeAtomic(seedDatabase);
-    })().finally(() => {
-      seeding = null;
-    });
-    await seeding;
-    return structuredClone(seedDatabase);
-  }
-}
-
-/** Serialises writes so two admin saves never clobber each other. */
-function mutate<T>(fn: (db: Database) => T): Promise<T> {
-  const run = writeQueue.then(async () => {
-    const db = await readDb();
-    const result = fn(db);
-    await writeAtomic(db);
-    return result;
-  });
-  writeQueue = run.catch(() => undefined);
-  return run;
-}
-
-// ---------- Settings ----------
-export async function getSettings(): Promise<Settings> {
-  return (await readDb()).settings;
-}
-
-export function updateSettings(settings: Settings) {
-  return mutate((db) => {
-    db.settings = settings;
-  });
-}
-
-// ---------- Categories ----------
-export async function getCategories(): Promise<Category[]> {
-  return (await readDb()).categories.sort((a, b) => a.order - b.order);
-}
-
-export async function getCategory(slug: string) {
-  return (await getCategories()).find((c) => c.slug === slug);
-}
-
-// ---------- Courses ----------
-export async function getCourses({ includeDrafts = false } = {}): Promise<Course[]> {
-  const courses = (await readDb()).courses.sort((a, b) => a.order - b.order);
-  return includeDrafts ? courses : courses.filter((c) => c.published);
-}
-
-export async function getCoursesByCategory(categorySlug: string) {
-  return (await getCourses()).filter((c) => c.categorySlug === categorySlug);
-}
-
-export async function getCourse(categorySlug: string, slug: string) {
-  return (await getCourses()).find((c) => c.categorySlug === categorySlug && c.slug === slug);
-}
-
-export async function getCourseById(id: string) {
-  return (await getCourses({ includeDrafts: true })).find((c) => c.id === id);
-}
-
-export function saveCourse(course: Course) {
-  return mutate((db) => {
-    const clash = db.courses.find(
-      (c) => c.id !== course.id && c.slug === course.slug && c.categorySlug === course.categorySlug,
-    );
-    if (clash) throw new Error(`Another course already uses the URL "${course.slug}" in this category.`);
-    const idx = db.courses.findIndex((c) => c.id === course.id);
-    if (idx === -1) db.courses.push(course);
-    else db.courses[idx] = course;
-  });
-}
-
-export function deleteCourse(id: string) {
-  return mutate((db) => {
-    db.courses = db.courses.filter((c) => c.id !== id);
-  });
-}
-
-// ---------- Enquiries ----------
-export async function getEnquiries(): Promise<Enquiry[]> {
-  return (await readDb()).enquiries.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-}
-
-export function addEnquiry(data: Omit<Enquiry, "id" | "status" | "createdAt">) {
-  return mutate((db) => {
-    db.enquiries.push({ ...data, id: randomUUID(), status: "new", createdAt: new Date().toISOString() });
-  });
-}
-
-export function updateEnquiryStatus(id: string, status: Enquiry["status"]) {
-  return mutate((db) => {
-    const e = db.enquiries.find((x) => x.id === id);
-    if (e) e.status = status;
-  });
-}
-
-export function deleteEnquiry(id: string) {
-  return mutate((db) => {
-    db.enquiries = db.enquiries.filter((e) => e.id !== id);
-  });
 }
 
 export function newId() {
   return randomUUID();
 }
 
+// ---------- Settings ----------
+export async function getSettings(): Promise<Settings> {
+  const doc = await (await col<WithId<Settings>>("settings")).findOne({ _id: "site" }, NO_ID);
+  // Merge over defaults so fields added in later versions always exist.
+  return { ...seedSettings, ...(doc as Settings | null) };
+}
+
+export async function updateSettings(settings: Settings) {
+  await (await col<WithId<Settings>>("settings")).updateOne({ _id: "site" }, { $set: settings }, { upsert: true });
+}
+
+// ---------- Categories ----------
+export async function getCategories(): Promise<Category[]> {
+  return (await col<WithId<Category>>("categories")).find({}, NO_ID).sort({ order: 1 }).toArray();
+}
+
+export async function getCategory(slug: string) {
+  return (await (await col<WithId<Category>>("categories")).findOne({ _id: slug }, NO_ID)) ?? undefined;
+}
+
+// ---------- Courses ----------
+export async function getCourses({ includeDrafts = false } = {}): Promise<Course[]> {
+  const filter = includeDrafts ? {} : { published: true };
+  return (await col<WithId<Course>>("courses")).find(filter, NO_ID).sort({ order: 1, title: 1 }).toArray();
+}
+
+export async function getCoursesByCategory(categorySlug: string) {
+  return (await col<WithId<Course>>("courses"))
+    .find({ categorySlug, published: true }, NO_ID)
+    .sort({ order: 1, title: 1 })
+    .toArray();
+}
+
+export async function getCourse(categorySlug: string, slug: string) {
+  return (await (await col<WithId<Course>>("courses")).findOne({ categorySlug, slug, published: true }, NO_ID)) ?? undefined;
+}
+
+export async function getCourseById(id: string) {
+  return (await (await col<WithId<Course>>("courses")).findOne({ _id: id }, NO_ID)) ?? undefined;
+}
+
+export async function saveCourse(course: Course) {
+  const courses = await col<WithId<Course>>("courses");
+  const clash = await courses.findOne({ _id: { $ne: course.id }, slug: course.slug, categorySlug: course.categorySlug });
+  if (clash) throw new Error(`Another course already uses the URL "${course.slug}" in this category.`);
+  await courses.replaceOne({ _id: course.id }, course, { upsert: true });
+}
+
+export async function deleteCourse(id: string) {
+  await (await col<WithId<Course>>("courses")).deleteOne({ _id: id });
+}
+
+// ---------- Enquiries ----------
+export async function getEnquiries(): Promise<Enquiry[]> {
+  return (await col<WithId<Enquiry>>("enquiries")).find({}, NO_ID).sort({ createdAt: -1 }).toArray();
+}
+
+export async function addEnquiry(data: Omit<Enquiry, "id" | "status" | "createdAt">) {
+  const id = randomUUID();
+  await (await col<WithId<Enquiry>>("enquiries")).insertOne({
+    ...data,
+    _id: id,
+    id,
+    status: "new",
+    createdAt: new Date().toISOString(),
+  });
+}
+
+export async function updateEnquiryStatus(id: string, status: Enquiry["status"]) {
+  await (await col<WithId<Enquiry>>("enquiries")).updateOne({ _id: id }, { $set: { status } });
+}
+
+export async function deleteEnquiry(id: string) {
+  await (await col<WithId<Enquiry>>("enquiries")).deleteOne({ _id: id });
+}
+
 // ---------- Students ----------
-export async function getStudents(): Promise<Student[]> {
-  return (await readDb()).students.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+async function nextSequence(name: string) {
+  const counters = await col<{ _id: string; seq: number }>("counters");
+  const doc = await counters.findOneAndUpdate({ _id: name }, { $inc: { seq: 1 } }, { upsert: true, returnDocument: "after" });
+  return doc!.seq;
+}
+
+export async function getStudents(filter: { courseIds?: string[] } = {}): Promise<Student[]> {
+  const query = filter.courseIds ? { courseId: { $in: filter.courseIds } } : {};
+  return (await col<WithId<Student>>("students")).find(query, NO_ID).sort({ createdAt: -1 }).toArray();
 }
 
 export async function getStudent(id: string) {
-  return (await readDb()).students.find((s) => s.id === id);
+  return (await (await col<WithId<Student>>("students")).findOne({ _id: id }, NO_ID)) ?? undefined;
 }
 
-export function saveStudent(input: Omit<Student, "rollNo" | "createdAt"> & Partial<Pick<Student, "rollNo" | "createdAt">>) {
-  return mutate((db) => {
-    const idx = db.students.findIndex((s) => s.id === input.id);
-    if (idx === -1) {
-      const next = db.students.reduce((max, s) => Math.max(max, Number(s.rollNo.replace(/\D/g, "")) || 0), 0) + 1;
-      db.students.push({ ...input, rollNo: `GWA${String(next).padStart(4, "0")}`, createdAt: new Date().toISOString() });
-    } else {
-      db.students[idx] = { ...db.students[idx], ...input, rollNo: db.students[idx].rollNo, createdAt: db.students[idx].createdAt };
-    }
+export async function saveStudent(input: Omit<Student, "rollNo" | "createdAt">) {
+  const students = await col<WithId<Student>>("students");
+  const { id, ...fields } = input;
+  const existing = await students.findOne({ _id: id });
+  if (existing) {
+    await students.updateOne({ _id: id }, { $set: fields });
+    return;
+  }
+  const seq = await nextSequence("student");
+  await students.insertOne({
+    ...input,
+    _id: id,
+    rollNo: `GSA${String(seq).padStart(4, "0")}`,
+    createdAt: new Date().toISOString(),
   });
 }
 
-export function deleteStudent(id: string) {
-  return mutate((db) => {
-    db.students = db.students.filter((s) => s.id !== id);
-    for (const day of Object.values(db.attendance)) delete day[id];
-  });
+export async function deleteStudent(id: string) {
+  await (await col<WithId<Student>>("students")).deleteOne({ _id: id });
+  await (await col<AttendanceDoc>("attendance")).deleteMany({ studentId: id });
 }
 
 // ---------- Attendance ----------
+function toBook(docs: AttendanceDoc[]): AttendanceBook {
+  const book: AttendanceBook = {};
+  for (const d of docs) (book[d.date] ??= {})[d.studentId] = d.mark;
+  return book;
+}
+
 export async function getAttendanceFor(date: string): Promise<Record<string, AttendanceMark>> {
-  return (await readDb()).attendance[date] ?? {};
+  return toBook(await (await col<AttendanceDoc>("attendance")).find({ date }).toArray())[date] ?? {};
 }
 
-/** All attendance between two dates (inclusive, YYYY-MM-DD). */
-export async function getAttendanceRange(from: string, to: string) {
-  const book = (await readDb()).attendance;
-  return Object.fromEntries(Object.entries(book).filter(([d]) => d >= from && d <= to));
+/** All attendance between two dates (inclusive, YYYY-MM-DD), optionally for some students only. */
+export async function getAttendanceRange(from: string, to: string, studentIds?: string[]) {
+  const query: Document = { date: { $gte: from, $lte: to } };
+  if (studentIds) query.studentId = { $in: studentIds };
+  return toBook(await (await col<AttendanceDoc>("attendance")).find(query).toArray());
 }
 
-export async function getAttendanceBook() {
-  return (await readDb()).attendance;
+export async function getAttendanceBook(studentIds?: string[]) {
+  const query = studentIds ? { studentId: { $in: studentIds } } : {};
+  return toBook(await (await col<AttendanceDoc>("attendance")).find(query).toArray());
 }
 
-/** Merges marks for one date; a null mark clears that student's entry. */
-export function saveAttendance(date: string, marks: Record<string, AttendanceMark | null>) {
-  return mutate((db) => {
-    const day = { ...(db.attendance[date] ?? {}) };
-    for (const [studentId, mark] of Object.entries(marks)) {
-      if (mark) day[studentId] = mark;
-      else delete day[studentId];
-    }
-    if (Object.keys(day).length) db.attendance[date] = day;
-    else delete db.attendance[date];
-  });
+/** Saves marks for one date; a null mark clears that student's entry. */
+export async function saveAttendance(date: string, marks: Record<string, AttendanceMark | null>, markedBy: string) {
+  const ops = Object.entries(marks).map(([studentId, mark]) =>
+    mark
+      ? {
+          updateOne: {
+            filter: { _id: `${date}:${studentId}` },
+            update: { $set: { date, studentId, mark, markedBy, updatedAt: new Date() } },
+            upsert: true,
+          },
+        }
+      : { deleteOne: { filter: { _id: `${date}:${studentId}` } } },
+  );
+  if (ops.length) await (await col<AttendanceDoc>("attendance")).bulkWrite(ops, { ordered: false });
 }
 
 // ---------- Certificates ----------
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I to avoid misreading
+export const CERT_ID_PATTERN = /GSA-\d{4}-[A-Z0-9]{6}/;
 
 function makeCode(year: number) {
   const bytes = crypto.getRandomValues(new Uint8Array(6));
-  return `GWA-${year}-${Array.from(bytes, (b) => CODE_CHARS[b % CODE_CHARS.length]).join("")}`;
+  return `GSA-${year}-${Array.from(bytes, (b) => CODE_CHARS[b % CODE_CHARS.length]).join("")}`;
 }
 
 export function normaliseCertificateId(input: string) {
-  const match = input.toUpperCase().match(/GWA-\d{4}-[A-Z0-9]{6}/);
+  const match = input.toUpperCase().match(CERT_ID_PATTERN);
   return match ? match[0] : input.trim().toUpperCase();
 }
 
 export async function getCertificates(): Promise<Certificate[]> {
-  return (await readDb()).certificates.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return (await col<WithId<Certificate>>("certificates")).find({}, NO_ID).sort({ createdAt: -1 }).toArray();
 }
 
 export async function getCertificate(id: string) {
   const code = normaliseCertificateId(id);
-  return (await readDb()).certificates.find((c) => c.id === code);
+  return (await (await col<WithId<Certificate>>("certificates")).findOne({ _id: code }, NO_ID)) ?? undefined;
 }
 
-export function createCertificate(input: Omit<Certificate, "id" | "createdAt" | "status">) {
-  return mutate((db) => {
-    const year = Number(input.issueDate.slice(0, 4)) || new Date().getFullYear();
-    let id = makeCode(year);
-    while (db.certificates.some((c) => c.id === id)) id = makeCode(year);
+export async function createCertificate(input: Omit<Certificate, "id" | "createdAt" | "status">) {
+  const certificates = await col<WithId<Certificate>>("certificates");
+  const year = Number(input.issueDate.slice(0, 4)) || new Date().getFullYear();
+  for (let attempt = 0; ; attempt++) {
+    const id = makeCode(year);
     const cert: Certificate = { ...input, id, status: "valid", createdAt: new Date().toISOString() };
-    db.certificates.push(cert);
+    try {
+      await certificates.insertOne({ ...cert, _id: id });
+    } catch (err) {
+      // 11000 = duplicate key: the random code already exists, try another one.
+      if ((err as { code?: number }).code === 11000 && attempt < 5) continue;
+      throw err;
+    }
     if (input.studentId) {
-      const s = db.students.find((x) => x.id === input.studentId);
-      if (s) s.status = "completed";
+      await (await col<WithId<Student>>("students")).updateOne({ _id: input.studentId }, { $set: { status: "completed" } });
     }
     return cert;
-  });
+  }
 }
 
-export function updateCertificate(id: string, patch: Partial<Omit<Certificate, "id" | "createdAt">>) {
-  return mutate((db) => {
-    const c = db.certificates.find((x) => x.id === id);
-    if (c) Object.assign(c, patch);
-  });
+export async function updateCertificate(id: string, patch: Partial<Omit<Certificate, "id" | "createdAt">>) {
+  await (await col<WithId<Certificate>>("certificates")).updateOne({ _id: id }, { $set: patch });
 }
 
-export function deleteCertificate(id: string) {
-  return mutate((db) => {
-    db.certificates = db.certificates.filter((c) => c.id !== id);
-  });
+export async function deleteCertificate(id: string) {
+  await (await col<WithId<Certificate>>("certificates")).deleteOne({ _id: id });
+}
+
+// ---------- Teachers ----------
+type TeacherDoc = WithId<Teacher> & { passwordHash: string };
+
+export async function getTeachers(): Promise<Teacher[]> {
+  return (await col<TeacherDoc>("teachers"))
+    .find({}, { projection: { _id: 0, passwordHash: 0 } })
+    .sort({ name: 1 })
+    .toArray();
+}
+
+export async function getTeacher(id: string) {
+  return (await (await col<TeacherDoc>("teachers")).findOne({ _id: id }, { projection: { _id: 0, passwordHash: 0 } })) ?? undefined;
+}
+
+/** Includes the password hash — only for the login check. */
+export async function getTeacherForLogin(username: string) {
+  return (await (await col<TeacherDoc>("teachers")).findOne({ username: username.trim().toLowerCase() })) ?? undefined;
+}
+
+export async function saveTeacher(teacher: Omit<Teacher, "createdAt" | "passwordChangedAt">, passwordHash?: string) {
+  const teachers = await col<TeacherDoc>("teachers");
+  const { id, ...fields } = teacher;
+  const clash = await teachers.findOne({ _id: { $ne: id }, username: teacher.username });
+  if (clash) throw new Error(`The username "${teacher.username}" is already taken.`);
+
+  const existing = await teachers.findOne({ _id: id });
+  if (existing) {
+    const set: Partial<TeacherDoc> = { ...fields };
+    if (passwordHash) Object.assign(set, { passwordHash, passwordChangedAt: Date.now() });
+    await teachers.updateOne({ _id: id }, { $set: set });
+  } else {
+    if (!passwordHash) throw new Error("A password is required for a new teacher.");
+    await teachers.insertOne({
+      ...teacher,
+      _id: id,
+      passwordHash,
+      passwordChangedAt: Date.now(),
+      createdAt: new Date().toISOString(),
+    });
+  }
+}
+
+export async function deleteTeacher(id: string) {
+  await (await col<TeacherDoc>("teachers")).deleteOne({ _id: id });
 }

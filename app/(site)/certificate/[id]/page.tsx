@@ -70,8 +70,8 @@ export default async function CertificateResultPage({ params }: { params: Promis
               <h1 className="mt-6 font-display text-4xl font-bold sm:text-5xl">{valid ? "Certificate Verified" : "Certificate Revoked"}</h1>
               <p className="mx-auto mt-3 max-w-xl text-white/75">
                 {valid
-                  ? "This is a genuine certificate issued by Goodwill Academy, Chandigarh."
-                  : "This certificate was issued by Goodwill Academy but has been revoked and is no longer valid."}
+                  ? "This is a genuine certificate issued by Goodwill Skills Academy, Tarn Taran."
+                  : "This certificate was issued by Goodwill Skills Academy but has been revoked and is no longer valid."}
               </p>
               <p className="mt-4 inline-block rounded-full bg-white/10 px-5 py-2 font-mono text-lg font-semibold tracking-wider ring-1 ring-white/20">
                 {cert.id}

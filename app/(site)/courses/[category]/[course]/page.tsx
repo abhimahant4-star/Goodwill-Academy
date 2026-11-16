@@ -11,7 +11,12 @@ import { SITE_NAME, SITE_URL, jsonLd, pageMetadata } from "@/lib/seo";
 type Props = { params: Promise<{ category: string; course: string }> };
 
 export async function generateStaticParams() {
-  return (await getCourses()).map((c) => ({ category: c.categorySlug, course: c.slug }));
+  // If the database isn't reachable during the build, pages are rendered on first visit instead.
+  try {
+    return (await getCourses()).map((c) => ({ category: c.categorySlug, course: c.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -19,8 +24,8 @@ export async function generateMetadata({ params }: Props) {
   const course = await getCourse(category, slug);
   if (!course) return {};
   return pageMetadata({
-    title: `${course.title} in Chandigarh – Fees, Duration & Certificate`,
-    description: `Join the best ${course.title.toLowerCase()} in Chandigarh at Goodwill Academy. ${course.shortDescription} ${course.duration} course with ${course.certificates.join(" & ")}.`.slice(0, 160),
+    title: `${course.title} in Tarn Taran – Fees, Duration & Certificate`,
+    description: `Join the best ${course.title.toLowerCase()} in Tarn Taran at Goodwill Skills Academy. ${course.shortDescription} ${course.duration} course with ${course.certificates.join(" & ")}.`.slice(0, 160),
     path: `/courses/${category}/${course.slug}`,
     keywords: course.keywords,
     image: course.image,
@@ -36,10 +41,10 @@ export default async function CoursePage({ params }: Props) {
   const faqs = [
     {
       q: `What is the duration of the ${course.title}?`,
-      a: `The ${course.title} at Goodwill Academy, Chandigarh is a ${course.duration} programme. Batch timings are flexible — contact us to pick a slot that suits you.`,
+      a: `The ${course.title} at Goodwill Skills Academy, Tarn Taran is a ${course.duration} programme. Batch timings are flexible — contact us to pick a slot that suits you.`,
     },
     {
-      q: `What are the ${course.title} fees in Chandigarh?`,
+      q: `What are the ${course.title} fees in Tarn Taran?`,
       a: `${course.fee === "Contact for fees" ? "Fees depend on the batch and any combo offer you choose." : `The course fee is ${course.fee}.`} Call ${settings.phone} or fill the enquiry form for the latest fees and offers.`,
     },
     {
@@ -97,7 +102,7 @@ export default async function CoursePage({ params }: Props) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(schema)} />
       <PageHero
-        title={`${course.title} in Chandigarh`}
+        title={`${course.title} in Tarn Taran`}
         subtitle={course.shortDescription}
         gradient={cat.gradient}
         crumbs={[
@@ -134,7 +139,7 @@ export default async function CoursePage({ params }: Props) {
             <h2 className="mb-4 font-display text-3xl font-bold text-brand-950">About the {course.title}</h2>
             <p className="text-lg leading-relaxed text-ink/70">{course.description}</p>
             <p className="mt-4 leading-relaxed text-ink/70">
-              Looking for the best {course.title.toLowerCase()} in Chandigarh, Mohali or Panchkula? Goodwill Academy
+              Looking for the best {course.title.toLowerCase()} in Tarn Taran, Amritsar or Patti? Goodwill Skills Academy
               combines expert trainers, practical sessions and recognised certification so you can start earning with
               confidence.
             </p>

@@ -49,11 +49,11 @@ export function Seal({ size = 132 }: { size?: number }) {
       <circle cx="60" cy="60" r="42" fill={MAROON} />
       <circle cx="60" cy="60" r="39" fill="none" stroke="#e8bd5c" strokeWidth="1" />
       <circle cx="60" cy="60" r="23" fill="none" stroke="#e8bd5c" strokeWidth=".8" strokeDasharray="2 2" />
-      <text fill="#f2d48c" fontSize="7" fontWeight="700" letterSpacing="1.1" fontFamily="var(--font-poppins), sans-serif">
-        <textPath href="#sealText" startOffset="0">GOODWILL ACADEMY ★ CHANDIGARH ★</textPath>
+      <text fill="#f2d48c" fontSize="6.1" fontWeight="700" letterSpacing="0.9" fontFamily="var(--font-poppins), sans-serif">
+        <textPath href="#sealText" startOffset="0">GOODWILL SKILLS ACADEMY ★ TARN TARAN ★</textPath>
       </text>
       <text x="60" y="58" textAnchor="middle" fill="#f2d48c" fontSize="13" fontWeight="700" fontFamily="var(--font-playfair), serif">
-        GWA
+        GSA
       </text>
       <text x="60" y="69" textAnchor="middle" fill="#f2d48c" fontSize="5.5" letterSpacing="1" fontFamily="var(--font-poppins), sans-serif">
         CERTIFIED
@@ -125,7 +125,7 @@ export function Certificate({ cert, settings, qrSvg, verifyUrl }: Props) {
             <GraduationCap className="h-8 w-8" />
           </span>
           <div className="text-left">
-            <p className="font-display text-[34px] font-bold leading-none tracking-[0.12em] text-brand-900">GOODWILL ACADEMY</p>
+            <p className="font-display text-[30px] font-bold leading-none tracking-[0.1em] text-brand-900">GOODWILL SKILLS ACADEMY</p>
             <p className="mt-1.5 text-[11.5px] font-medium tracking-[0.28em] text-gold-600 uppercase">
               Skill Development &amp; Vocational Training · {settings.city}
             </p>
@@ -161,7 +161,7 @@ export function Certificate({ cert, settings, qrSvg, verifyUrl }: Props) {
         <p className="mt-4 max-w-[780px] text-[16px] leading-[1.7] text-ink/80">
           has successfully completed the course <b className="text-brand-900">{cert.courseTitle}</b>
           {cert.duration && <> of <b>{cert.duration}</b> duration</>}
-          {period} at Goodwill Academy, {settings.city}
+          {period} at Goodwill Skills Academy, {settings.city}
           {cert.grade ? (
             <>
               {" "}and has been awarded Grade <b className="text-brand-900">{cert.grade}</b>.

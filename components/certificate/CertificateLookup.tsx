@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import jsQR from "jsqr";
 import { Camera, CameraOff, Hash, ImageUp, Loader2, QrCode, Search, ShieldCheck } from "lucide-react";
 
-const ID_PATTERN = /GWA-\d{4}-[A-Z0-9]{6}/i;
+const ID_PATTERN = /GSA-\d{4}-[A-Z0-9]{6}/i;
 
 type Tab = "id" | "scan";
 
@@ -20,7 +20,7 @@ export function CertificateLookup({ initialId = "", notFound }: { initialId?: st
   function openCertificate(raw: string) {
     const match = raw.match(ID_PATTERN);
     if (!match) {
-      setError("This QR code is not a Goodwill Academy certificate.");
+      setError("This QR code is not a Goodwill Skills Academy certificate.");
       return false;
     }
     setBusy(true);
@@ -81,7 +81,7 @@ export function CertificateLookup({ initialId = "", notFound }: { initialId?: st
                   <input
                     value={id}
                     onChange={(e) => setId(e.target.value.toUpperCase())}
-                    placeholder="GWA-2026-XXXXXX"
+                    placeholder="GSA-2026-XXXXXX"
                     autoComplete="off"
                     spellCheck={false}
                     className="w-full rounded-2xl border border-brand-100 bg-cream py-4 pl-12 pr-4 font-mono text-lg tracking-wider text-brand-950 uppercase outline-none transition placeholder:text-ink/25 focus:border-brand-400 focus:ring-4 focus:ring-brand-100"

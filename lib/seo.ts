@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
-export const SITE_NAME = "Goodwill Academy";
-export const CITY = "Chandigarh";
-export const NEARBY = ["Mohali", "Panchkula", "Zirakpur", "Kharar"];
+export const SITE_NAME = "Goodwill Skills Academy";
+/** Official district spelling; CITY_ALT is the common alternate spelling people also search for. */
+export const CITY = "Tarn Taran";
+export const CITY_ALT = "Taran Taran";
+export const STATE = "Punjab";
+export const NEARBY = ["Amritsar", "Patti", "Goindwal Sahib", "Bhikhiwind"];
 
 /**
  * Builds a local-SEO keyword set for a course focus phrase,
- * e.g. focus = "bridal makeup" -> "best bridal makeup course in Chandigarh", ...
+ * e.g. focus = "bridal makeup" -> "best bridal makeup course in Tarn Taran", ...
  */
 export function localKeywords(focus: string, extra: string[] = []): string[] {
   const f = focus.toLowerCase();
@@ -24,6 +27,9 @@ export function localKeywords(focus: string, extra: string[] = []): string[] {
     `${f} course with certificate`,
     `${f} course fees in ${CITY}`,
     `top ${f} academy in ${CITY}`,
+    `${f} course in ${CITY_ALT}`,
+    `best ${f} institute in ${CITY_ALT}`,
+    `${f} course in ${CITY}, ${STATE}`,
   ];
   return dedupe([...extra.map((k) => k.toLowerCase()), ...base]);
 }
@@ -46,7 +52,7 @@ type PageMetaInput = {
   path: string;
   keywords: string[];
   image?: string;
-  /** Skip the "| Goodwill Academy Chandigarh" title suffix (used on the homepage). */
+  /** Skip the "| Goodwill Skills Academy" title suffix (used on the homepage). */
   absoluteTitle?: boolean;
 };
 

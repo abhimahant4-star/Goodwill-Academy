@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export function WhatsAppButton({ number }: { number: string }) {
   const href = `https://wa.me/${number.replace(/\D/g, "")}?text=${encodeURIComponent(
-    "Hello Goodwill Academy, I want to know more about your courses.",
+    "Hello Goodwill Skills Academy, I want to know more about your courses.",
   )}`;
   return (
     <motion.a

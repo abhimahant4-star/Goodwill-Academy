@@ -1,14 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth";
+import { SESSION_COOKIES, verifySessionToken, type Role } from "@/lib/auth";
 
+/** First line of defence: a valid signed cookie for the right role. Pages and actions re-check in full. */
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  if (pathname === "/admin/login") return NextResponse.next();
+  const role: Role = pathname.startsWith("/teacher") ? "teacher" : "admin";
+  const loginPath = `/${role}/login`;
+  if (pathname === loginPath) return NextResponse.next();
 
-  const ok = await verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value);
-  if (!ok) {
+  const session = await verifySessionToken(req.cookies.get(SESSION_COOKIES[role])?.value, role);
+  if (!session) {
     const url = req.nextUrl.clone();
-    url.pathname = "/admin/login";
+    url.pathname = loginPath;
     url.search = "";
     return NextResponse.redirect(url);
   }
@@ -16,5 +19,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/teacher/:path*"],
 };

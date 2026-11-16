@@ -15,6 +15,7 @@ import {
   LogOut,
   Menu,
   Settings,
+  UserCog,
   Users,
   X,
 } from "lucide-react";
@@ -26,6 +27,7 @@ const items = [
   { href: "/admin/students", label: "Students", icon: Users },
   { href: "/admin/attendance", label: "Attendance", icon: CalendarCheck },
   { href: "/admin/certificates", label: "Certificates", icon: Award },
+  { href: "/admin/teachers", label: "Teachers", icon: UserCog },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];

@@ -4,12 +4,16 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarDays, CheckCheck, ChevronLeft, ChevronRight, RotateCcw, Save, Search, UserX } from "lucide-react";
-import { saveAttendanceAction } from "@/app/admin/actions";
+import { saveAttendanceAction } from "@/app/attendance-actions";
 import type { AttendanceMark } from "@/lib/types";
 
 type Row = { id: string; name: string; rollNo: string; batch: string; course: string };
 
 type Props = {
+  /** Page this sheet lives on, e.g. /admin/attendance or /teacher/attendance */
+  basePath: string;
+  /** Shown in the empty state when the viewer can add students */
+  addStudentHref?: string;
   date: string;
   today: string;
   course: string;
@@ -30,7 +34,7 @@ function shiftDate(date: string, days: number) {
   return d.toISOString().slice(0, 10);
 }
 
-export function AttendanceSheet({ date, today, course, courses, students, initial }: Props) {
+export function AttendanceSheet({ basePath, addStudentHref, date, today, course, courses, students, initial }: Props) {
   const router = useRouter();
   const [marks, setMarks] = useState<Record<string, AttendanceMark | undefined>>(initial);
   const [query, setQuery] = useState("");
@@ -57,7 +61,7 @@ export function AttendanceSheet({ date, today, course, courses, students, initia
     const params = new URLSearchParams({ date: next.date ?? date });
     const c = next.course ?? course;
     if (c) params.set("course", c);
-    router.push(`/admin/attendance?${params}`);
+    router.push(`${basePath}?${params}`);
   }
 
   function setAll(mark: AttendanceMark | undefined) {
@@ -73,7 +77,7 @@ export function AttendanceSheet({ date, today, course, courses, students, initia
     for (const s of students) payload[s.id] = marks[s.id] ?? null;
     startSave(async () => {
       try {
-        await saveAttendanceAction(date, payload);
+        await saveAttendanceAction(basePath.startsWith("/teacher") ? "teacher" : "admin", date, payload);
         setToast({ ok: true, text: `Attendance saved for ${counts.P + counts.A + counts.L} students.` });
         router.refresh();
       } catch (e) {
@@ -125,7 +129,7 @@ export function AttendanceSheet({ date, today, course, courses, students, initia
         </div>
         <p className="self-center text-sm font-medium text-slate-700 lg:text-center">{pretty}</p>
         <select value={course} onChange={(e) => go({ course: e.target.value })} className="rounded-xl border border-slate-200 px-3 py-2 text-sm" aria-label="Course">
-          <option value="">All courses</option>
+          {courses.length !== 1 && <option value="">All courses</option>}
           {courses.map((c) => (
             <option key={c.id} value={c.id}>{c.title}</option>
           ))}
@@ -158,7 +162,9 @@ export function AttendanceSheet({ date, today, course, courses, students, initia
         <div className="rounded-2xl bg-white p-16 text-center ring-1 ring-slate-200">
           <UserX className="mx-auto h-10 w-10 text-slate-300" />
           <p className="mt-3 text-sm text-slate-500">No active students for this date{course ? " and course" : ""}.</p>
-          <a href="/admin/students/new" className="mt-4 inline-block text-sm font-semibold text-brand-600">Add a student →</a>
+          {addStudentHref && (
+            <a href={addStudentHref} className="mt-4 inline-block text-sm font-semibold text-brand-600">Add a student →</a>
+          )}
         </div>
       ) : (
         <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">

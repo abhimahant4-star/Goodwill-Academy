@@ -7,24 +7,26 @@ import { getCategories, getCourses } from "@/lib/db";
 import { pageMetadata } from "@/lib/seo";
 
 const KEYWORDS = [
-  "courses in Chandigarh",
-  "best courses after 12th in Chandigarh",
-  "short term courses in Chandigarh",
-  "job oriented courses in Chandigarh",
-  "makeup course in Chandigarh",
-  "best fashion designing course in Chandigarh",
-  "computer course in Chandigarh",
-  "sewing course in Chandigarh",
-  "certificate courses for girls in Chandigarh",
+  "courses in Tarn Taran",
+  "best courses after 12th in Tarn Taran",
+  "short term courses in Tarn Taran",
+  "job oriented courses in Tarn Taran",
+  "makeup course in Tarn Taran",
+  "best fashion designing course in Tarn Taran",
+  "computer course in Tarn Taran",
+  "sewing course in Tarn Taran",
+  "certificate courses for girls in Tarn Taran",
   "professional courses with international certificate",
-  "skill development courses in Mohali",
-  "courses in Panchkula",
+  "skill development courses in Amritsar",
+  "courses in Patti",
+  "courses in Taran Taran",
+  "best institute in Taran Taran Punjab",
 ];
 
 export const metadata = pageMetadata({
-  title: "All Courses – Makeup, Fashion Designing, Sewing & Computer Courses in Chandigarh",
+  title: "All Courses – Makeup, Fashion Designing, Sewing & Computer Courses in Tarn Taran",
   description:
-    "Explore all certified courses at Goodwill Academy Chandigarh: makeup, hair, skin & nail art, fashion designing, sewing & tailoring, basic computer, MS Office, Tally with GST, typing and advanced Excel.",
+    "Explore all certified courses at Goodwill Skills Academy Tarn Taran: makeup, hair, skin & nail art, fashion designing, sewing & tailoring, basic computer, MS Office, Tally with GST, typing and advanced Excel.",
   path: "/courses",
   keywords: KEYWORDS,
 });
@@ -35,7 +37,7 @@ export default async function CoursesPage() {
   return (
     <>
       <PageHero
-        title="All Courses at Goodwill Academy, Chandigarh"
+        title="All Courses at Goodwill Skills Academy, Tarn Taran"
         subtitle="Job-oriented certificate courses in beauty & makeup, fashion designing, sewing and computers — choose a category to get started."
         crumbs={[
           { name: "Home", href: "/" },

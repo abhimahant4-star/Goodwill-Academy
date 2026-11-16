@@ -7,24 +7,26 @@ import { getCertificate } from "@/lib/db";
 import { pageMetadata } from "@/lib/seo";
 
 const KEYWORDS = [
-  "Goodwill Academy certificate verification",
-  "verify Goodwill Academy certificate",
-  "online certificate verification Chandigarh",
+  "Goodwill Skills Academy certificate verification",
+  "verify Goodwill Skills Academy certificate",
+  "online certificate verification Tarn Taran",
   "certificate verification by QR code",
   "international certificate verification",
   "salon certificate verification",
-  "makeup course certificate Chandigarh",
+  "makeup course certificate Tarn Taran",
   "fashion designing course certificate verification",
   "computer course certificate verification",
-  "sewing course certificate Chandigarh",
+  "sewing course certificate Tarn Taran",
   "check course certificate online",
   "download course certificate",
+  "certificate verification Taran Taran",
+  "Goodwill Skills Academy Taran Taran certificate",
 ];
 
 export const metadata = pageMetadata({
   title: "Certificate Verification – Verify by QR Code or Certificate ID",
   description:
-    "Verify a Goodwill Academy Chandigarh certificate online. Scan the QR code or enter the unique certificate ID to view and download the International or Salon Certificate.",
+    "Verify a Goodwill Skills Academy Tarn Taran certificate online. Scan the QR code or enter the unique certificate ID to view and download the International or Salon Certificate.",
   path: "/certificate",
   keywords: KEYWORDS,
 });
@@ -53,7 +55,7 @@ export default async function CertificateSearchPage({ searchParams }: { searchPa
               Verify Your <span className="text-gradient">Certificate</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg text-white/75">
-              Every Goodwill Academy certificate carries a unique ID and a secure QR code. Scan it or enter the ID to
+              Every Goodwill Skills Academy certificate carries a unique ID and a secure QR code. Scan it or enter the ID to
               instantly confirm it&apos;s genuine — and view or download your certificate.
             </p>
             <ul className="mt-8 grid max-w-lg gap-3 sm:grid-cols-2">
@@ -74,12 +76,12 @@ export default async function CertificateSearchPage({ searchParams }: { searchPa
         <SectionHeading
           eyebrow="How it works"
           title={<>Verification in <span className="text-gradient">3 Simple Steps</span></>}
-          text="Employers, salons and students can check any Goodwill Academy certificate in seconds."
+          text="Employers, salons and students can check any Goodwill Skills Academy certificate in seconds."
         />
         <Stagger className="grid gap-6 md:grid-cols-3">
           {[
-            { icon: QrCode, t: "Scan or enter ID", d: "Scan the QR code at the bottom-left of the certificate, or type the ID like GWA-2026-XXXXXX." },
-            { icon: Fingerprint, t: "We match our records", d: "The ID is checked against Goodwill Academy's official register of issued certificates." },
+            { icon: QrCode, t: "Scan or enter ID", d: "Scan the QR code at the bottom-left of the certificate, or type the ID like GSA-2026-XXXXXX." },
+            { icon: Fingerprint, t: "We match our records", d: "The ID is checked against Goodwill Skills Academy's official register of issued certificates." },
             { icon: Award, t: "View & download", d: "See the student name, course, grade and dates, and download or print the certificate." },
           ].map(({ icon: I, t, d }, i) => (
             <StaggerItem key={t}>
@@ -99,7 +101,7 @@ export default async function CertificateSearchPage({ searchParams }: { searchPa
           <Building2 className="h-12 w-12 shrink-0 text-brand-600" />
           <p className="text-ink/75">
             <b className="text-brand-950">For employers &amp; salons:</b> if a certificate can&apos;t be found or shows as revoked, please
-            contact Goodwill Academy before accepting it.
+            contact Goodwill Skills Academy before accepting it.
           </p>
         </Reveal>
 

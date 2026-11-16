@@ -42,7 +42,7 @@ export function HomeHero() {
           <h1 className="font-display text-4xl font-bold leading-[1.1] sm:text-5xl lg:text-6xl xl:text-7xl">
             <SplitHeading text="Best Makeup, Fashion Designing &" />
             <span className="text-gradient">Computer Academy</span>
-            <SplitHeading text=" in Chandigarh" />
+            <SplitHeading text=" in Tarn Taran" />
           </h1>
 
           <motion.p
@@ -52,7 +52,7 @@ export function HomeHero() {
             className="mt-6 max-w-xl text-lg leading-relaxed text-white/75"
           >
             Learn professional makeup, hair, skin &amp; nail art, fashion designing, sewing and computer courses at
-            Goodwill Academy — with practical training and an International Certificate that opens doors to your career.
+            Goodwill Skills Academy — with practical training and an International Certificate that opens doors to your career.
           </motion.p>
 
           <motion.div
@@ -94,7 +94,7 @@ export function HomeHero() {
                   <Star key={i} className="h-4 w-4 fill-current" />
                 ))}
               </div>
-              <p className="text-sm text-white/70">Trusted by students across Chandigarh, Mohali &amp; Panchkula</p>
+              <p className="text-sm text-white/70">Trusted by students across Tarn Taran, Amritsar &amp; Patti</p>
             </div>
           </motion.div>
         </div>

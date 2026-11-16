@@ -123,7 +123,7 @@ export function CourseForm({ course, categories }: { course?: Course; categories
           value={keywords}
           onChange={(e) => setKeywords(e.target.value)}
           className={field}
-          placeholder={"best bridal makeup course in Chandigarh\nbridal makeup course in Mohali\n..."}
+          placeholder={"best bridal makeup course in Tarn Taran\nbridal makeup course in Amritsar\n..."}
         />
         <p className="mt-1 text-xs text-slate-400">One keyword per line. Used in the page meta tags and in the &quot;Popular Searches&quot; section of the page.</p>
       </div>

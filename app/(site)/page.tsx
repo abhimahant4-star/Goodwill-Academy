@@ -10,25 +10,28 @@ import { getCategories, getCourses } from "@/lib/db";
 import { jsonLd, pageMetadata } from "@/lib/seo";
 
 const HOME_KEYWORDS = [
-  "best makeup academy in Chandigarh",
-  "best fashion designing course in Chandigarh",
-  "best computer institute in Chandigarh",
-  "beautician course in Chandigarh",
-  "bridal makeup course in Chandigarh",
-  "sewing and tailoring course in Chandigarh",
-  "Tally with GST course in Chandigarh",
-  "hair styling course in Chandigarh",
-  "nail art course in Chandigarh",
+  "best makeup academy in Tarn Taran",
+  "best fashion designing course in Tarn Taran",
+  "best computer institute in Tarn Taran",
+  "beautician course in Tarn Taran",
+  "bridal makeup course in Tarn Taran",
+  "sewing and tailoring course in Tarn Taran",
+  "Tally with GST course in Tarn Taran",
+  "hair styling course in Tarn Taran",
+  "nail art course in Tarn Taran",
   "salon course with international certificate",
-  "fashion designing institute in Mohali",
-  "makeup course in Panchkula",
-  "Goodwill Academy Chandigarh",
+  "fashion designing institute in Amritsar",
+  "makeup course in Patti",
+  "Goodwill Skills Academy Tarn Taran",
+  "best skills academy in Taran Taran",
+  "makeup and fashion designing course in Taran Taran",
+  "computer course in Taran Taran",
 ];
 
 export const metadata = pageMetadata({
-  title: "Goodwill Academy | Best Makeup, Fashion Designing & Computer Institute in Chandigarh",
+  title: "Goodwill Skills Academy | Best Makeup, Fashion Designing & Computer Institute in Tarn Taran",
   description:
-    "Goodwill Academy Chandigarh offers professional makeup, hair, skin, nail art, fashion designing, sewing and computer courses (Tally, MS Office, Excel) with International & Salon Certificate. Enrol today!",
+    "Goodwill Skills Academy Tarn Taran offers professional makeup, hair, skin, nail art, fashion designing, sewing and computer courses (Tally, MS Office, Excel) with International & Salon Certificate. Enrol today!",
   path: "/",
   keywords: HOME_KEYWORDS,
   absoluteTitle: true,
@@ -36,16 +39,16 @@ export const metadata = pageMetadata({
 
 const faqs = [
   {
-    q: "Which is the best makeup and beauty academy in Chandigarh?",
-    a: "Goodwill Academy is one of the best makeup academies in Chandigarh, offering professional makeup, hair, skin & beauty and nail art courses with both an International Certificate and a Salon Certificate, taught through hands-on practice on real models.",
+    q: "Which is the best makeup and beauty academy in Tarn Taran?",
+    a: "Goodwill Skills Academy is one of the best makeup academies in Tarn Taran, offering professional makeup, hair, skin & beauty and nail art courses with both an International Certificate and a Salon Certificate, taught through hands-on practice on real models.",
   },
   {
-    q: "Do you offer a fashion designing course in Chandigarh with certificate?",
+    q: "Do you offer a fashion designing course in Tarn Taran with certificate?",
     a: "Yes. Our fashion designing courses cover sketching, cutting & pattern making, stitching & tailoring, embroidery, fabric & colour knowledge and advanced lehenga and bridal dress designing — all with an International Certificate.",
   },
   {
-    q: "Which computer courses are available at Goodwill Academy?",
-    a: "We offer a Basic Computer Course, MS Office, Tally with GST, English/Hindi/Punjabi typing and Advanced Excel — practical, job-oriented computer courses for students, homemakers and job seekers in Chandigarh, Mohali and Panchkula.",
+    q: "Which computer courses are available at Goodwill Skills Academy?",
+    a: "We offer a Basic Computer Course, MS Office, Tally with GST, English/Hindi/Punjabi typing and Advanced Excel — practical, job-oriented computer courses for students, homemakers and job seekers in Tarn Taran, Amritsar and Patti.",
   },
   {
     q: "What certificates will I get after completing a course?",
@@ -118,7 +121,7 @@ export default async function HomePage() {
         <SectionHeading
           eyebrow="Our Course Categories"
           title={<>Choose Your <span className="text-gradient">Career Path</span></>}
-          text="From makeup and fashion designing to sewing and computer courses — Goodwill Academy is your one-stop skill academy in Chandigarh."
+          text="From makeup and fashion designing to sewing and computer courses — Goodwill Skills Academy is your one-stop skill academy in Tarn Taran."
         />
         <Stagger className="grid gap-6 md:grid-cols-2">
           {categories.map((cat) => {
@@ -162,7 +165,7 @@ export default async function HomePage() {
               center={false}
               eyebrow="Certification"
               title={<>Get Certified with <span className="text-gradient">International &amp; Salon</span> Certificates</>}
-              text="Every Goodwill Academy course ends with a recognised certificate, so your skills are trusted by salons, boutiques, offices and clients."
+              text="Every Goodwill Skills Academy course ends with a recognised certificate, so your skills are trusted by salons, boutiques, offices and clients."
             />
           </div>
           <Stagger className="grid gap-5 sm:grid-cols-2">
@@ -187,7 +190,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
         <SectionHeading
           eyebrow="Popular Courses"
-          title={<>Most Loved <span className="text-gradient">Courses</span> in Chandigarh</>}
+          title={<>Most Loved <span className="text-gradient">Courses</span> in Tarn Taran</>}
           text="Hand-picked courses our students join the most — each with practical training and certification."
         />
         <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -211,7 +214,7 @@ export default async function HomePage() {
       <section className="bg-gradient-to-b from-brand-50 to-cream py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <SectionHeading
-            eyebrow="Why Goodwill Academy"
+            eyebrow="Why Goodwill Skills Academy"
             title={<>Why Students Choose <span className="text-gradient">Goodwill</span></>}
           />
           <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

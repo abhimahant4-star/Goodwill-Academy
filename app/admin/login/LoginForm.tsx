@@ -43,6 +43,12 @@ export function LoginForm() {
       >
         {pending ? "Signing in..." : "Sign In"}
       </button>
+      <p className="mt-5 text-center text-sm text-white/60">
+        Are you a teacher?{" "}
+        <a href="/teacher/login" className="font-semibold text-gold-300 hover:underline">
+          Teacher login
+        </a>
+      </p>
     </motion.form>
   );
 }

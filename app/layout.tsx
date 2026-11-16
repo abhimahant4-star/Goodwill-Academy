@@ -10,7 +10,7 @@ const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400", variable: "-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} | Best Makeup, Fashion Designing & Computer Institute in Chandigarh`,
+    default: `${SITE_NAME} | Best Makeup, Fashion Designing & Computer Institute in Tarn Taran`,
     template: `%s | ${SITE_NAME}`,
   },
   applicationName: SITE_NAME,

@@ -6,23 +6,25 @@ import { getCourses, getSettings } from "@/lib/db";
 import { pageMetadata } from "@/lib/seo";
 
 const KEYWORDS = [
-  "Goodwill Academy contact number",
-  "Goodwill Academy Chandigarh address",
-  "admission open in Chandigarh",
-  "makeup course admission in Chandigarh",
-  "fashion designing admission in Chandigarh",
-  "computer course admission in Chandigarh",
+  "Goodwill Skills Academy contact number",
+  "Goodwill Skills Academy Tarn Taran address",
+  "admission open in Tarn Taran",
+  "makeup course admission in Tarn Taran",
+  "fashion designing admission in Tarn Taran",
+  "computer course admission in Tarn Taran",
   "sewing classes near me",
   "beauty academy near me",
   "computer institute near me",
   "fashion designing institute near me",
-  "free career counselling Chandigarh",
+  "free career counselling Tarn Taran",
+  "Goodwill Skills Academy Taran Taran contact",
+  "admission open in Taran Taran",
 ];
 
 export const metadata = pageMetadata({
-  title: "Contact & Admission – Goodwill Academy Chandigarh",
+  title: "Contact & Admission – Goodwill Skills Academy Tarn Taran",
   description:
-    "Contact Goodwill Academy Chandigarh for admission in makeup, beauty, fashion designing, sewing and computer courses. Call, WhatsApp or fill the form for free counselling.",
+    "Contact Goodwill Skills Academy Tarn Taran for admission in makeup, beauty, fashion designing, sewing and computer courses. Call, WhatsApp or fill the form for free counselling.",
   path: "/contact",
   keywords: KEYWORDS,
 });
@@ -39,7 +41,7 @@ export default async function ContactPage() {
   return (
     <>
       <PageHero
-        title="Contact Goodwill Academy"
+        title="Contact Goodwill Skills Academy"
         subtitle="Admissions are open! Talk to our counsellor and find the right course for your career."
         crumbs={[
           { name: "Home", href: "/" },
@@ -81,7 +83,7 @@ export default async function ContactPage() {
             {settings.mapEmbedUrl.startsWith("https://www.google.com/maps/embed") ? (
               <iframe
                 src={settings.mapEmbedUrl}
-                title="Goodwill Academy location map"
+                title="Goodwill Skills Academy location map"
                 className="h-full min-h-[420px] w-full rounded-3xl ring-1 ring-brand-100"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
