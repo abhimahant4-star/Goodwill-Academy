@@ -79,4 +79,5 @@ inserts the default courses, categories and settings from `lib/seed.ts`.
 - **Production:** create a free cluster on MongoDB Atlas, add a database user, allow your host's IP, and use the
   `mongodb+srv://…` URI. Works on Vercel, Render, Railway, a VPS or Hostinger Node hosting.
 - Teacher passwords are stored as salted scrypt hashes, never in plain text.
+- Check the connection any time with `npm run check-db` (shows each collection and its document count).
 - Back up with `mongodump --db goodwill_skills_academy`.
