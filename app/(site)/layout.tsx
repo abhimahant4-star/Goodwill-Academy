@@ -25,7 +25,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       streetAddress: settings.address,
       addressLocality: settings.city,
       addressRegion: "Punjab",
-      postalCode: "143401",
       addressCountry: "IN",
     },
     sameAs: [settings.instagram, settings.facebook, settings.youtube].filter(Boolean),

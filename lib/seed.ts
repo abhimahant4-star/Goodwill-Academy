@@ -468,10 +468,10 @@ export const seedCourses: Course[] = courseInputs.map((c, i) => course(c, i + 1)
 
 export const seedSettings: Settings = {
   siteName: "Goodwill Skills Academy",
-  phone: "+91 98765 43210",
-  whatsapp: "919876543210",
-  email: "info@goodwillskillsacademy.in",
-  address: "Tarn Taran, Punjab 143401",
+  phone: "+91 97790 44113",
+  whatsapp: "919779044113",
+  email: "goodwillskillsacademy@gmail.com",
+  address: "Tarn Taran Road, Harike Pattan, Near Satluj Palace, Punjab",
   city: "Tarn Taran",
   hours: "Mon – Sat: 9:00 AM – 7:00 PM",
   mapEmbedUrl: "",

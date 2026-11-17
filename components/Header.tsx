@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, GraduationCap, Menu, Phone, X } from "lucide-react";
+import { ChevronDown, Menu, Phone, X } from "lucide-react";
+import { Logo } from "./Logo";
 
 type NavCategory = { slug: string; shortName: string; courses: { slug: string; title: string }[] };
 
@@ -43,14 +44,8 @@ export function Header({ categories, phone }: { categories: NavCategory[]; phone
       }`}
     >
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5" aria-label="Goodwill Skills Academy home">
-          <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-brand-600 to-gold-500 text-white shadow-lg shadow-brand-600/30">
-            <GraduationCap className="h-6 w-6" />
-          </span>
-          <span className="leading-tight">
-            <span className={`block font-display text-xl font-bold transition ${scrolled ? "text-brand-900" : "text-white"}`}>Goodwill</span>
-            <span className={`block text-[11px] font-medium tracking-[0.25em] uppercase ${scrolled ? "text-gold-600" : "text-gold-300"}`}>Skills Academy</span>
-          </span>
+        <Link href="/" className="shrink-0" aria-label="Goodwill Skills Academy home">
+          <Logo id="header-logo" tone={scrolled ? "dark" : "light"} tagline={false} className="h-12 w-auto sm:h-14" />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">

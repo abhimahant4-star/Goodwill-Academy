@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Clock, GraduationCap, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { Logo } from "./Logo";
 import type { Category, Settings } from "@/lib/types";
 
 export function Footer({ settings, categories }: { settings: Settings; categories: Category[] }) {
@@ -14,11 +15,8 @@ export function Footer({ settings, categories }: { settings: Settings; categorie
       <div className="grain absolute inset-0 opacity-40" aria-hidden />
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Link href="/" className="mb-4 flex items-center gap-2.5">
-            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-brand-500 to-gold-500 text-white">
-              <GraduationCap className="h-6 w-6" />
-            </span>
-            <span className="font-display text-2xl font-bold text-white">Goodwill Skills Academy</span>
+          <Link href="/" className="mb-5 block" aria-label="Goodwill Skills Academy home">
+            <Logo id="footer-logo" tone="light" className="h-16 w-auto" />
           </Link>
           <p className="text-sm leading-relaxed">
             Best academy in {settings.city} for makeup, beauty, fashion designing, sewing and computer courses with

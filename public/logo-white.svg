@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1640 512" role="img" aria-label="Goodwill Skills Academy — Learn Skills, Build Career">
+  <g>
+  <defs>
+    <radialGradient id="gsa-bg" cx="38%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#b0276c"/>
+      <stop offset=".55" stop-color="#7a1a4b"/>
+      <stop offset="1" stop-color="#3d0d26"/>
+    </radialGradient>
+    <linearGradient id="gsa-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbe7b0"/>
+      <stop offset=".45" stop-color="#e2b04e"/>
+      <stop offset="1" stop-color="#a8741f"/>
+    </linearGradient>
+    <linearGradient id="gsa-gold-dark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d4a03a"/>
+      <stop offset="1" stop-color="#8f5f17"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Badge -->
+  <circle cx="256" cy="256" r="248" fill="url(#gsa-gold)"/>
+  <circle cx="256" cy="256" r="232" fill="url(#gsa-bg)"/>
+  <circle cx="256" cy="256" r="216" fill="none" stroke="url(#gsa-gold)" stroke-width="3"/>
+  <circle cx="256" cy="256" r="203" fill="none" stroke="#e8bd5c" stroke-width="2" stroke-dasharray="1 9" stroke-linecap="round" opacity=".7"/>
+
+  <!-- Mortarboard -->
+  <path d="M176 214 L176 262 Q256 304 336 262 L336 214 L256 248 Z" fill="url(#gsa-gold-dark)"/>
+  <path d="M256 118 L408 182 L256 246 L104 182 Z" fill="url(#gsa-gold)"/>
+  <path d="M256 128 L388 182 L256 236 L124 182 Z" fill="none" stroke="#3d0d26" stroke-width="2" opacity=".25"/>
+  <circle cx="256" cy="182" r="9" fill="#5a1236"/>
+  <path d="M256 182 Q330 186 386 196 L386 252" fill="none" stroke="url(#gsa-gold)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M378 250 h16 l6 34 q-14 8 -28 0 z" fill="url(#gsa-gold)"/>
+
+  <!-- Open book -->
+  <path d="M252 318 Q196 292 128 302 L128 392 Q196 382 252 406 Z" fill="url(#gsa-gold)"/>
+  <path d="M260 318 Q316 292 384 302 L384 392 Q316 382 260 406 Z" fill="url(#gsa-gold)"/>
+  <path d="M146 324 Q196 316 238 334 M146 346 Q196 338 238 356 M146 368 Q196 360 238 378" fill="none" stroke="#7a1a4b" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+  <path d="M366 324 Q316 316 274 334 M366 346 Q316 338 274 356 M366 368 Q316 360 274 378" fill="none" stroke="#7a1a4b" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+
+  <!-- Sparkles (beauty & creativity) -->
+  <path d="M150 92 Q154 112 174 116 Q154 120 150 140 Q146 120 126 116 Q146 112 150 92 Z" fill="#f6dd9a"/>
+  <path d="M374 96 Q376 106 386 108 Q376 110 374 120 Q372 110 362 108 Q372 106 374 96 Z" fill="#f6dd9a" opacity=".8"/>
+</g>
+  <text x="572" y="262" textLength="1020" lengthAdjust="spacingAndGlyphs" font-family="'Playfair Display', Georgia, 'Times New Roman', serif" font-size="176" font-weight="700" fill="#ffffff">GOODWILL</text>
+  <rect x="576" y="300" width="1012" height="4" rx="2" fill="#d4a03a"/>
+  <text x="576" y="388" textLength="1012" lengthAdjust="spacingAndGlyphs" font-family="Poppins, 'Segoe UI', Arial, sans-serif" font-size="70" font-weight="600" letter-spacing="18" fill="#e8bd5c">SKILLS ACADEMY</text>
+  <text x="578" y="460" textLength="1008" lengthAdjust="spacing" font-family="Poppins, 'Segoe UI', Arial, sans-serif" font-size="36" font-weight="500" letter-spacing="8" fill="#e9d3dd">LEARN SKILLS · BUILD CAREER</text>
+</svg>
