@@ -148,6 +148,16 @@ export function Certificate({ cert, settings, qrSvg, verifyUrl }: Props) {
             </p>
           </div>
         </div>
+        {settings.isoCertification && (
+          <p
+            className="mt-2.5 flex items-center gap-2 rounded-full border px-4 py-[3px] text-[11px] font-semibold tracking-[0.18em] text-brand-800 uppercase"
+            style={{ borderColor: `${GOLD}99`, background: "#fffaf0" }}
+          >
+            <span style={{ color: GOLD }}>✦</span>
+            An {settings.isoCertification} Certified Institute
+            <span style={{ color: GOLD }}>✦</span>
+          </p>
+        )}
 
         {/* Title */}
         <div className="mt-5 flex items-center gap-5">

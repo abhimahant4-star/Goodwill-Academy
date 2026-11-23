@@ -87,6 +87,8 @@ export type Settings = {
   stampLine1: string;
   stampLine2: string;
   stampLine3: string;
+  /** Quality certification printed on certificates, e.g. "ISO 9001:2015" (empty = hidden) */
+  isoCertification: string;
 };
 
 /** Settings fields that hold uploaded images — edited by their own controls, not the text form. */

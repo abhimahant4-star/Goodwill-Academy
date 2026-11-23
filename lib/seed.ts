@@ -492,4 +492,5 @@ export const seedSettings: Settings = {
   stampLine1: "Goodwill Skills Academy",
   stampLine2: "Harike Pattan (T.T)",
   stampLine3: "M. 98781-59113",
+  isoCertification: "ISO 9001:2015",
 };

@@ -54,6 +54,18 @@ export function CertificateBrandingForm({ settings }: { settings: Settings }) {
 
       <div className="grid gap-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 md:grid-cols-2">
         <div className="md:col-span-2">
+          <h2 className="font-semibold text-slate-900">Quality certification</h2>
+        </div>
+        <AdminField
+          label="ISO certification"
+          hint='Printed under the academy name as "An ISO 9001:2015 Certified Institute". Leave empty to hide it.'
+        >
+          <input name="isoCertification" defaultValue={settings.isoCertification} placeholder="ISO 9001:2015" className={adminField} />
+        </AdminField>
+      </div>
+
+      <div className="grid gap-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 md:grid-cols-2">
+        <div className="md:col-span-2">
           <h2 className="font-semibold text-slate-900">Academy stamp</h2>
           <p className="text-xs text-slate-500">
             A digital copy of your rubber stamp is used by default. You can also upload a clear photo of the real stamp on white paper
