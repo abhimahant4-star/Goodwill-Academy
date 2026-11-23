@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Eye, EyeOff, KeyRound } from "lucide-react";
 import { saveTeacherAction } from "@/app/admin/actions";
 import { AdminField, adminField } from "./StudentForm";
+import { SignatureField } from "./ImageField";
 import type { Teacher } from "@/lib/types";
 
 type CourseOption = { id: string; title: string; category: string };
@@ -63,6 +64,14 @@ export function TeacherForm({ teacher, courses }: { teacher?: Teacher; courses: 
         <label className="flex items-center gap-2 text-sm text-slate-700 md:col-span-2">
           <input type="checkbox" name="active" defaultChecked={teacher?.active ?? true} className="h-4 w-4 accent-brand-600" /> Account active (can sign in)
         </label>
+      </div>
+
+      <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <h2 className="mb-1 font-semibold text-slate-900">Signature</h2>
+        <p className="mb-4 text-xs text-slate-500">
+          Printed on certificates this teacher issues. Draw it with the mouse or finger, or upload a photo of the signature on white paper.
+        </p>
+        <SignatureField name="signatureId" label="Teacher signature" initialId={teacher?.signatureId} />
       </div>
 
       <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">

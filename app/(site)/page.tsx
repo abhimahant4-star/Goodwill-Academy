@@ -8,6 +8,7 @@ import { Faq } from "@/components/Faq";
 import { Icon } from "@/components/Icon";
 import { getCategories, getCourses } from "@/lib/db";
 import { jsonLd, pageMetadata } from "@/lib/seo";
+import { sized } from "@/lib/images";
 
 const HOME_KEYWORDS = [
   "best makeup academy in Tarn Taran",
@@ -131,8 +132,21 @@ export default async function HomePage() {
                 <TiltCard>
                   <Link
                     href={`/courses/${cat.slug}`}
-                    className={`group relative flex min-h-64 flex-col justify-end overflow-hidden rounded-[2rem] bg-gradient-to-br ${cat.gradient} p-8 text-white shadow-xl`}
+                    className={`group relative flex min-h-72 flex-col justify-end overflow-hidden rounded-[2rem] bg-gradient-to-br ${cat.gradient} p-8 text-white shadow-xl`}
                   >
+                    {cat.image && (
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={sized(cat.image, 900)}
+                          alt={cat.name}
+                          loading="lazy"
+                          className="absolute inset-0 h-full w-full object-cover transition duration-[1.2s] group-hover:scale-110"
+                        />
+                        <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-75`} aria-hidden />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" aria-hidden />
+                      </>
+                    )}
                     <div className="grain absolute inset-0" aria-hidden />
                     <Icon
                       name={cat.icon}

@@ -9,6 +9,7 @@ import { hashPassword } from "@/lib/password";
 import * as db from "@/lib/db";
 import { dedupe } from "@/lib/seo";
 import { isValidDate } from "@/lib/attendance";
+import { cleanAadhaar, isValidAadhaar } from "@/lib/aadhaar";
 import type { Course, EnquiryStatus, IconName, StudentStatus } from "@/lib/types";
 
 function refreshSite() {
@@ -125,6 +126,8 @@ export async function saveSettings(_prev: string | null, form: FormData): Promis
   const current = await db.getSettings();
   const next = { ...current };
   for (const key of Object.keys(current) as (keyof typeof current)[]) {
+    // Each settings form only sends its own fields; leave everything else untouched.
+    if (!form.has(key)) continue;
     next[key] = String(form.get(key) ?? "").trim();
   }
   await db.updateSettings(next);
@@ -148,6 +151,8 @@ export async function saveStudentAction(_prev: string | null, form: FormData): P
   if (!(await db.getCourseById(courseId))) return "Please choose a course.";
   if (!isValidDate(joinDate)) return "Please choose a valid joining date.";
   if (!["active", "completed", "dropped"].includes(status)) return "Invalid status.";
+  const aadhaar = cleanAadhaar(str(form, "aadhaar", 20));
+  if (aadhaar && !isValidAadhaar(aadhaar)) return "That Aadhaar number isn't valid. Please check all 12 digits.";
 
   const id = str(form, "id") || db.newId();
   await db.saveStudent({
@@ -160,6 +165,8 @@ export async function saveStudentAction(_prev: string | null, form: FormData): P
     batch: str(form, "batch", 60),
     joinDate,
     status,
+    photoId: str(form, "photoId", 40) || undefined,
+    aadhaar: aadhaar || undefined,
   });
   revalidatePath("/admin", "layout");
   redirect(`/admin/students?saved=1`);
@@ -187,6 +194,15 @@ export async function createCertificateAction(_prev: string | null, form: FormDa
   if (endDate && !isValidDate(endDate)) return "Invalid end date.";
   if (startDate && endDate && endDate < startDate) return "End date must be after the start date.";
 
+  // Copy the issuing teacher's name and signature so the certificate stays the same even if the teacher changes later.
+  const teacherId = str(form, "issuedByTeacherId");
+  const teacher = teacherId ? await db.getTeacher(teacherId) : undefined;
+  if (teacherId && !teacher) return "The selected teacher no longer exists.";
+
+  // Only the last 4 digits are kept on the (public) certificate.
+  const aadhaar = cleanAadhaar(str(form, "aadhaar", 20));
+  if (aadhaar && !isValidAadhaar(aadhaar)) return "That Aadhaar number isn't valid. Please check all 12 digits.";
+
   const cert = await db.createCertificate({
     studentId: str(form, "studentId") || undefined,
     studentName,
@@ -199,6 +215,11 @@ export async function createCertificateAction(_prev: string | null, form: FormDa
     startDate,
     endDate,
     issueDate,
+    photoId: str(form, "photoId", 40) || undefined,
+    aadhaarLast4: aadhaar ? aadhaar.slice(-4) : undefined,
+    issuedByTeacherId: teacher?.id,
+    issuedByName: teacher?.name,
+    issuedBySignatureId: teacher?.signatureId,
   });
   revalidatePath("/admin", "layout");
   redirect(`/admin/certificates/${cert.id}?created=1`);
@@ -241,6 +262,7 @@ export async function saveTeacherAction(_prev: string | null, form: FormData): P
         phone: str(form, "phone", 20),
         courseIds: form.getAll("courseIds").map(String).filter((c) => validCourses.has(c)),
         active: form.get("active") === "on",
+        signatureId: str(form, "signatureId", 40) || undefined,
       },
       password ? await hashPassword(password) : undefined,
     );

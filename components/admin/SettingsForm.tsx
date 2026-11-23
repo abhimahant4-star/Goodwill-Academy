@@ -16,10 +16,6 @@ const fields: { key: keyof Settings; label: string; hint?: string }[] = [
   { key: "instagram", label: "Instagram URL" },
   { key: "facebook", label: "Facebook URL" },
   { key: "youtube", label: "YouTube URL" },
-  { key: "signatory1Name", label: "Certificate signature 1 – name", hint: "Printed on the left signature line of certificates" },
-  { key: "signatory1Title", label: "Certificate signature 1 – designation" },
-  { key: "signatory2Name", label: "Certificate signature 2 – name", hint: "Printed on the right signature line of certificates" },
-  { key: "signatory2Title", label: "Certificate signature 2 – designation" },
 ];
 
 export function SettingsForm({ settings }: { settings: Settings }) {

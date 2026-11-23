@@ -8,6 +8,7 @@ import { VerifyBadge } from "@/components/certificate/VerifyBadge";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion";
 import { getCertificateView } from "@/lib/certificate-view";
 import { formatDate } from "@/lib/attendance";
+import { maskAadhaar } from "@/lib/aadhaar";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,7 @@ export default async function CertificateResultPage({ params }: { params: Promis
   const valid = cert.status === "valid";
   const details = [
     { icon: User, label: "Student Name", value: cert.studentName },
+    ...(cert.aadhaarLast4 ? [{ icon: Hash, label: "Aadhaar No.", value: maskAadhaar(cert.aadhaarLast4) }] : []),
     { icon: GraduationCap, label: "Course", value: cert.courseTitle },
     { icon: BadgeCheck, label: "Certificate Type", value: cert.certificateType },
     { icon: Star, label: "Grade", value: cert.grade || "—" },

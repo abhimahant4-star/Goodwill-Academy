@@ -5,6 +5,7 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion";
 import { Icon } from "@/components/Icon";
 import { getCategories } from "@/lib/db";
 import { pageMetadata } from "@/lib/seo";
+import { sized } from "@/lib/images";
 
 const KEYWORDS = [
   "about Goodwill Skills Academy Tarn Taran",
@@ -73,8 +74,21 @@ export default async function AboutPage() {
                 href={`/courses/${cat.slug}`}
                 className={`group relative flex aspect-square flex-col justify-end overflow-hidden rounded-3xl bg-gradient-to-br ${cat.gradient} p-5 text-white shadow-xl`}
               >
-                <Icon name={cat.icon} className="absolute right-4 top-4 h-12 w-12 text-white/70 transition group-hover:scale-125" />
-                <span className="font-display text-xl font-bold">{cat.shortName}</span>
+                {cat.image && (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={sized(cat.image, 600)}
+                      alt={cat.name}
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition duration-[1.2s] group-hover:scale-110"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-60`} aria-hidden />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" aria-hidden />
+                  </>
+                )}
+                <Icon name={cat.icon} className="absolute right-4 top-4 h-12 w-12 text-white/80 drop-shadow transition group-hover:scale-125" />
+                <span className="relative font-display text-xl font-bold drop-shadow">{cat.shortName}</span>
               </Link>
             </StaggerItem>
           ))}

@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import { saveCourseAction } from "@/app/admin/actions";
 import { Icon, iconNames } from "@/components/Icon";
+import { CoverImageField } from "./ImageField";
 import type { Category, Course } from "@/lib/types";
 
 const field = "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100";
@@ -56,9 +57,14 @@ export function CourseForm({ course, categories }: { course?: Course; categories
         <Field label="Level">
           <input name="level" defaultValue={course?.level ?? "Beginner to Advanced"} className={field} />
         </Field>
-        <Field label="Image URL (optional)" hint="Shown on course cards instead of the icon.">
-          <input name="image" defaultValue={course?.image} className={field} placeholder="https://..." />
-        </Field>
+        <div className="md:col-span-2">
+          <CoverImageField
+            name="image"
+            label="Course photo"
+            hint="Shown at the top of the course page and on course cards. Photos are cropped to a wide 16:10 shape automatically."
+            initialUrl={course?.image}
+          />
+        </div>
         <div className="md:col-span-2">
           <span className="mb-1.5 block text-sm font-medium text-slate-700">Icon</span>
           <div className="flex flex-wrap gap-2">

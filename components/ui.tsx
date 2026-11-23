@@ -3,6 +3,7 @@ import { ArrowRight, Award, ChevronRight, Clock } from "lucide-react";
 import type { Category, Course } from "@/lib/types";
 import { Icon } from "./Icon";
 import { Reveal, TiltCard } from "./motion";
+import { sized } from "@/lib/images";
 
 export function SectionHeading({
   eyebrow,
@@ -40,7 +41,12 @@ export function CourseCard({ course, category }: { course: Course; category: Cat
         <div className={`relative h-40 overflow-hidden bg-gradient-to-br ${category.gradient}`}>
           {course.image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={course.image} alt={course.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
+            <img
+              src={sized(course.image, 640)}
+              alt={course.title}
+              loading="lazy"
+              className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+            />
           ) : (
             <>
               <div className="grain absolute inset-0" aria-hidden />
@@ -95,16 +101,27 @@ export function PageHero({
   subtitle,
   crumbs,
   gradient = "from-brand-900 via-brand-800 to-brand-600",
+  image,
   children,
 }: {
   title: string;
   subtitle?: string;
   crumbs: Crumb[];
   gradient?: string;
+  /** Optional background photo, tinted with the gradient so text stays readable */
+  image?: string;
   children?: React.ReactNode;
 }) {
   return (
     <section className={`relative overflow-clip bg-gradient-to-br ${gradient} pt-36 pb-20 text-white`}>
+      {image && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={sized(image, 1600)} alt="" className="absolute inset-0 h-full w-full object-cover" aria-hidden />
+          <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-[0.82]`} aria-hidden />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-black/30" aria-hidden />
+        </>
+      )}
       <div className="grain absolute inset-0" aria-hidden />
       <div className="absolute -right-24 -top-24 h-96 w-96 animate-float rounded-full bg-white/10 blur-3xl" aria-hidden />
       <div className="absolute -bottom-32 -left-16 h-80 w-80 animate-float rounded-full bg-gold-400/20 blur-3xl [animation-delay:2s]" aria-hidden />

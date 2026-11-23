@@ -24,6 +24,8 @@ export type Category = {
   icon: IconName;
   /** Tailwind gradient classes used for cards and banners */
   gradient: string;
+  /** Banner photo URL */
+  image?: string;
   keywords: string[];
   order: number;
 };
@@ -77,7 +79,20 @@ export type Settings = {
   signatory1Title: string;
   signatory2Name: string;
   signatory2Title: string;
+  /** Uploaded director signature (media id), printed on the right signature line */
+  directorSignatureId: string;
+  /** Uploaded scan of the rubber stamp (media id); when empty the built-in digital stamp is used */
+  stampImageId: string;
+  /** Text lines of the built-in digital stamp */
+  stampLine1: string;
+  stampLine2: string;
+  stampLine3: string;
 };
+
+/** Settings fields that hold uploaded images — edited by their own controls, not the text form. */
+export const SETTINGS_IMAGE_KEYS = ["directorSignatureId", "stampImageId"] as const;
+
+export type MediaKind = "photo" | "signature" | "stamp" | "cover";
 
 export type StudentStatus = "active" | "completed" | "dropped";
 
@@ -92,6 +107,10 @@ export type Student = {
   batch: string;
   joinDate: string; // YYYY-MM-DD
   status: StudentStatus;
+  /** Passport-size photo (media id) */
+  photoId?: string;
+  /** Full 12-digit Aadhaar number — admin only, never shown publicly */
+  aadhaar?: string;
   createdAt: string;
 };
 
@@ -118,6 +137,14 @@ export type Certificate = {
   startDate: string;
   endDate: string;
   issueDate: string;
+  /** Passport-size photo printed on the certificate (media id) */
+  photoId?: string;
+  /** Only the last 4 Aadhaar digits — printed masked as XXXX XXXX 1234 */
+  aadhaarLast4?: string;
+  /** Teacher who issued it — name and signature are copied so the certificate never changes later */
+  issuedByTeacherId?: string;
+  issuedByName?: string;
+  issuedBySignatureId?: string;
   status: CertificateStatus;
   createdAt: string;
 };
@@ -130,6 +157,8 @@ export type Teacher = {
   /** Courses this teacher can see and mark. Empty = all courses. */
   courseIds: string[];
   active: boolean;
+  /** Signature image (media id), printed on certificates this teacher issues */
+  signatureId?: string;
   createdAt: string;
   /** ms timestamp — sessions issued before this are rejected */
   passwordChangedAt: number;

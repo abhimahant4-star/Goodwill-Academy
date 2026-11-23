@@ -1,6 +1,9 @@
 import { GraduationCap } from "lucide-react";
 import type { Certificate as Cert, Settings } from "@/lib/types";
 import { formatDate } from "@/lib/attendance";
+import { mediaUrl } from "@/lib/media";
+import { maskAadhaar } from "@/lib/aadhaar";
+import { Stamp } from "./Stamp";
 
 /** A4 landscape at 96dpi. The sheet is always rendered at this size and scaled on screen. */
 export const CERT_W = 1122;
@@ -62,10 +65,16 @@ export function Seal({ size = 132 }: { size?: number }) {
   );
 }
 
-function Signature({ name, title }: { name: string; title: string }) {
+function Signature({ name, title, imageId, children }: { name: string; title: string; imageId?: string; children?: React.ReactNode }) {
   return (
-    <div className="w-[210px] text-center">
-      <div className="h-[46px]" />
+    <div className="relative w-[210px] text-center">
+      {children}
+      <div className="relative flex h-[58px] items-end justify-center">
+        {imageId && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={mediaUrl(imageId)} alt={`Signature of ${name || title}`} className="-mb-1 max-h-[60px] max-w-[190px] object-contain" />
+        )}
+      </div>
       <div className="mx-auto h-px w-full" style={{ background: `linear-gradient(90deg, transparent, ${MAROON}, transparent)` }} />
       {name && <p className="mt-2 text-[14px] font-semibold text-brand-950">{name}</p>}
       <p className={name ? "text-[11px] tracking-wide text-ink/60" : "mt-2 text-[13px] font-semibold text-brand-950"}>{title}</p>
@@ -117,6 +126,14 @@ export function Certificate({ cert, settings, qrSvg, verifyUrl }: Props) {
       <Corner className="bottom-[26px] right-[26px] rotate-180" />
       <Corner className="bottom-[26px] left-[26px] -rotate-90" />
 
+      {/* Student photo */}
+      {cert.photoId && (
+        <div className="absolute right-[118px] top-[64px] z-10 rounded-[6px] bg-white p-[5px] shadow-md" style={{ boxShadow: `0 0 0 2px ${GOLD}, 0 6px 14px rgba(79,18,49,.18)` }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={mediaUrl(cert.photoId)} alt={`Photo of ${cert.studentName}`} className="block h-[118px] w-[92px] rounded-[3px] object-cover" />
+        </div>
+      )}
+
       {/* Content */}
       <div className="absolute inset-[56px] flex flex-col items-center text-center">
         {/* Header */}
@@ -134,9 +151,9 @@ export function Certificate({ cert, settings, qrSvg, verifyUrl }: Props) {
 
         {/* Title */}
         <div className="mt-5 flex items-center gap-5">
-          <span className="h-px w-28" style={{ background: `linear-gradient(90deg, transparent, ${GOLD})` }} />
+          <span className="h-px w-20" style={{ background: `linear-gradient(90deg, transparent, ${GOLD})` }} />
           <h2 className="font-display text-[50px] font-bold leading-none tracking-[0.18em] text-brand-900">CERTIFICATE</h2>
-          <span className="h-px w-28" style={{ background: `linear-gradient(90deg, ${GOLD}, transparent)` }} />
+          <span className="h-px w-20" style={{ background: `linear-gradient(90deg, ${GOLD}, transparent)` }} />
         </div>
         <p className="font-script text-[34px] leading-tight" style={{ color: GOLD }}>of Completion</p>
 
@@ -152,9 +169,19 @@ export function Certificate({ cert, settings, qrSvg, verifyUrl }: Props) {
         <p className="mt-7 text-[13px] tracking-[0.25em] text-ink/60 uppercase">This is to certify that</p>
         <p className="mt-1 font-script text-[64px] leading-[1.05] text-brand-900">{cert.studentName}</p>
         <div className="h-px w-[460px]" style={{ background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)` }} />
-        {cert.guardianName && (
+        {(cert.guardianName || cert.aadhaarLast4) && (
           <p className="mt-2 text-[14px] text-ink/70">
-            {cert.relation || "S/o / D/o"} <span className="font-semibold text-brand-950">{cert.guardianName}</span>
+            {cert.guardianName && (
+              <>
+                {cert.relation || "S/o / D/o"} <span className="font-semibold text-brand-950">{cert.guardianName}</span>
+              </>
+            )}
+            {cert.guardianName && cert.aadhaarLast4 && <span className="mx-3 text-gold-500">|</span>}
+            {cert.aadhaarLast4 && (
+              <>
+                Aadhaar No. <span className="font-mono font-semibold tracking-wider text-brand-950">{maskAadhaar(cert.aadhaarLast4)}</span>
+              </>
+            )}
           </p>
         )}
 
@@ -186,13 +213,27 @@ export function Certificate({ cert, settings, qrSvg, verifyUrl }: Props) {
             </div>
           </div>
           <div className="justify-self-center">
-            <Signature name={settings.signatory1Name} title={settings.signatory1Title} />
+            <Signature
+              name={cert.issuedByName || settings.signatory1Name}
+              title={settings.signatory1Title}
+              imageId={cert.issuedBySignatureId}
+            />
           </div>
           <div className="-mb-2 justify-self-center">
             <Seal />
           </div>
           <div className="justify-self-center">
-            <Signature name={settings.signatory2Name} title={settings.signatory2Title} />
+            <Signature name={settings.signatory2Name} title={settings.signatory2Title} imageId={settings.directorSignatureId || undefined}>
+              {/* Academy stamp, placed over the director's signature like a real rubber stamp */}
+              <div className="pointer-events-none absolute -top-[46px] left-[78px] z-10 w-[178px] -rotate-[7deg] opacity-[0.88] mix-blend-multiply">
+                {settings.stampImageId ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={mediaUrl(settings.stampImageId)} alt="Academy stamp" className="max-h-[96px] w-full object-contain" />
+                ) : (
+                  <Stamp id={`stamp-${cert.id}`} lines={[settings.stampLine1, settings.stampLine2, settings.stampLine3]} className="w-full" />
+                )}
+              </div>
+            </Signature>
           </div>
         </div>
       </div>

@@ -81,6 +81,7 @@ export default async function CategoryPage({ params }: Props) {
         title={`${cat.name} in Tarn Taran`}
         subtitle={cat.tagline}
         gradient={cat.gradient}
+        image={cat.image}
         crumbs={[
           { name: "Home", href: "/" },
           { name: "Courses", href: "/courses" },

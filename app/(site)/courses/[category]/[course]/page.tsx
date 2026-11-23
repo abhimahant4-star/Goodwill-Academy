@@ -7,6 +7,7 @@ import { EnquiryForm } from "@/components/EnquiryForm";
 import { Faq } from "@/components/Faq";
 import { getCategory, getCourse, getCourses, getCoursesByCategory, getSettings } from "@/lib/db";
 import { SITE_NAME, SITE_URL, jsonLd, pageMetadata } from "@/lib/seo";
+import { sized } from "@/lib/images";
 
 type Props = { params: Promise<{ category: string; course: string }> };
 
@@ -105,6 +106,7 @@ export default async function CoursePage({ params }: Props) {
         title={`${course.title} in Tarn Taran`}
         subtitle={course.shortDescription}
         gradient={cat.gradient}
+        image={course.image}
         crumbs={[
           { name: "Home", href: "/" },
           { name: "Courses", href: "/courses" },
@@ -135,6 +137,24 @@ export default async function CoursePage({ params }: Props) {
 
       <section className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_420px]">
         <div className="space-y-14">
+          {course.image && (
+            <Reveal>
+              <figure className="group relative aspect-[16/9] overflow-hidden rounded-[2rem] shadow-2xl shadow-brand-900/15 ring-1 ring-brand-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={sized(course.image, 1200)}
+                  alt={`${course.title} training at Goodwill Skills Academy, Tarn Taran`}
+                  className="h-full w-full object-cover object-[center_30%] transition duration-[1.5s] group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/60 via-transparent to-transparent" aria-hidden />
+                <figcaption className="absolute bottom-5 left-6 right-6 flex flex-wrap items-center gap-2 text-sm font-medium text-white">
+                  <span className="rounded-full bg-white/20 px-3 py-1 backdrop-blur">{course.duration}</span>
+                  <span className="rounded-full bg-white/20 px-3 py-1 backdrop-blur">{course.level}</span>
+                  <span className="rounded-full bg-gold-500/90 px-3 py-1 text-brand-950">{course.certificates[0]}</span>
+                </figcaption>
+              </figure>
+            </Reveal>
+          )}
           <Reveal>
             <h2 className="mb-4 font-display text-3xl font-bold text-brand-950">About the {course.title}</h2>
             <p className="text-lg leading-relaxed text-ink/70">{course.description}</p>

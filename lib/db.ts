@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import type { Collection, Document } from "mongodb";
+import { Binary, type Collection, type Document } from "mongodb";
 import { getDb } from "./mongo";
 import { seedCategories, seedCourses, seedSettings } from "./seed";
 import type {
@@ -9,6 +9,7 @@ import type {
   Certificate,
   Course,
   Enquiry,
+  MediaKind,
   Settings,
   Student,
   Teacher,
@@ -277,6 +278,28 @@ export async function updateCertificate(id: string, patch: Partial<Omit<Certific
 
 export async function deleteCertificate(id: string) {
   await (await col<WithId<Certificate>>("certificates")).deleteOne({ _id: id });
+}
+
+// ---------- Media (photos, signatures, stamp) ----------
+// Stored in MongoDB rather than on disk so uploads also work on serverless hosts like Vercel.
+type MediaDoc = { _id: string; kind: MediaKind; contentType: string; data: Binary; size: number; createdAt: Date };
+
+export async function saveMedia(kind: MediaKind, contentType: string, bytes: Buffer) {
+  const id = randomUUID();
+  await (await col<MediaDoc>("media")).insertOne({
+    _id: id,
+    kind,
+    contentType,
+    data: new Binary(bytes),
+    size: bytes.length,
+    createdAt: new Date(),
+  });
+  return id;
+}
+
+export async function getMedia(id: string) {
+  const doc = await (await col<MediaDoc>("media")).findOne({ _id: id });
+  return doc ? { contentType: doc.contentType, bytes: Buffer.from(doc.data.buffer) } : undefined;
 }
 
 // ---------- Teachers ----------

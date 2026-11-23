@@ -3,6 +3,7 @@ import { CheckCircle2, Plus, Search } from "lucide-react";
 import { getAttendanceBook, getStudents } from "@/lib/db";
 import { getCourseOptions } from "@/lib/admin-data";
 import { percentColor, studentStats } from "@/lib/attendance";
+import { maskAadhaar } from "@/lib/aadhaar";
 import { StudentRowActions } from "@/components/admin/StudentRowActions";
 import type { StudentStatus } from "@/lib/types";
 
@@ -93,7 +94,11 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                     <td className="px-5 py-3 font-mono text-xs text-slate-500">{s.rollNo}</td>
                     <td className="px-5 py-3">
                       <Link href={`/admin/students/${s.id}`} className="font-medium text-slate-900 hover:text-brand-600">{s.name}</Link>
-                      <p className="text-xs text-slate-500">{s.phone}{s.batch && ` · ${s.batch}`}</p>
+                      <p className="text-xs text-slate-500">
+                        {s.phone}
+                        {s.batch && ` · ${s.batch}`}
+                        {s.aadhaar && <span className="font-mono"> · Aadhaar {maskAadhaar(s.aadhaar)}</span>}
+                      </p>
                     </td>
                     <td className="px-5 py-3 text-slate-700">{courseById[s.courseId]?.title ?? "—"}</td>
                     <td className="px-5 py-3">

@@ -1,5 +1,6 @@
 import type { Category, Course, IconName, Settings } from "./types";
 import { localKeywords } from "./seo";
+import { CATEGORY_PHOTOS, COURSE_PHOTOS } from "./images";
 
 /**
  * Initial content inserted into MongoDB the first time the app connects to an empty database.
@@ -10,7 +11,7 @@ import { localKeywords } from "./seo";
 const CERTS_BEAUTY = ["International Certificate", "Salon Certificate"];
 const CERTS_DEFAULT = ["International Certificate", "Goodwill Skills Academy Certificate"];
 
-export const seedCategories: Category[] = [
+const baseCategories: Category[] = [
   {
     slug: "beauty-makeup-courses",
     name: "Beauty, Makeup & Salon Courses",
@@ -86,6 +87,8 @@ export const seedCategories: Category[] = [
   },
 ];
 
+export const seedCategories: Category[] = baseCategories.map((c) => ({ ...c, image: CATEGORY_PHOTOS[c.slug] }));
+
 type CourseInput = {
   slug: string;
   categorySlug: string;
@@ -117,6 +120,7 @@ function course(input: CourseInput, order: number): Course {
     topics: input.topics,
     certificates: isBeauty ? CERTS_BEAUTY : CERTS_DEFAULT,
     keywords: localKeywords(input.focus, input.extraKeywords),
+    image: COURSE_PHOTOS[input.slug],
     featured: input.featured ?? false,
     published: true,
     order,
@@ -482,4 +486,10 @@ export const seedSettings: Settings = {
   signatory1Title: "Course Instructor",
   signatory2Name: "",
   signatory2Title: "Director",
+  directorSignatureId: "",
+  stampImageId: "",
+  // Same wording as the academy's rubber stamp
+  stampLine1: "Goodwill Skills Academy",
+  stampLine2: "Harike Pattan (T.T)",
+  stampLine3: "M. 98781-59113",
 };

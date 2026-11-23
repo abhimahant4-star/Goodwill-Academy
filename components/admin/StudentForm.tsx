@@ -4,6 +4,8 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { saveStudentAction } from "@/app/admin/actions";
 import type { Student } from "@/lib/types";
+import { ImageUploadField } from "./ImageField";
+import { formatAadhaar } from "@/lib/aadhaar";
 
 export const adminField =
   "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100";
@@ -28,6 +30,15 @@ export function StudentForm({ student, courses, today }: { student?: Student; co
     <form action={action} className="space-y-6">
       <input type="hidden" name="id" defaultValue={student?.id} />
       <div className="grid gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 md:grid-cols-2">
+        <div className="md:col-span-2">
+          <ImageUploadField
+            name="photoId"
+            kind="photo"
+            label="Passport-size photo"
+            hint="Printed on the student's certificate. Any photo works — it's cropped to passport size automatically."
+            initialId={student?.photoId}
+          />
+        </div>
         <AdminField label="Student name *">
           <input name="name" required defaultValue={student?.name} className={adminField} />
         </AdminField>
@@ -39,6 +50,17 @@ export function StudentForm({ student, courses, today }: { student?: Student; co
         </AdminField>
         <AdminField label="Email">
           <input name="email" type="email" defaultValue={student?.email} className={adminField} />
+        </AdminField>
+        <AdminField label="Aadhaar number" hint="Kept private. Certificates show only the last 4 digits (XXXX XXXX 1234).">
+          <input
+            name="aadhaar"
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={14}
+            placeholder="1234 5678 9012"
+            defaultValue={student?.aadhaar ? formatAadhaar(student.aadhaar) : ""}
+            className={`${adminField} font-mono tracking-wider`}
+          />
         </AdminField>
         <AdminField label="Course *">
           <select name="courseId" required defaultValue={student?.courseId ?? ""} className={adminField}>
